@@ -11,6 +11,7 @@ class AppSettings(BaseSettings):
     http_timeout: int = Field(35, description='rates-API request timeout')
     throttling_time: float = Field(600.0, description='Seconds between update rate tries')
     debug: bool = Field(default=False)
+    telegram_token: str
 
 
 app_settings = AppSettings(

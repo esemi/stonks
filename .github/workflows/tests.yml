@@ -37,4 +37,5 @@ jobs:
 
     - name: Run tests
       run: |
+        echo 'telegram_token=${{ secrets.TELEGRAM_TEST_TOKEN }}' > .env
         poetry run pytest -ra -v --cov=app
