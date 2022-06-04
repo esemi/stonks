@@ -3,12 +3,14 @@
 import asyncio
 import logging
 from collections import Counter
+from decimal import Decimal
 from typing import Optional
+
+import httpx
+from lxml import etree
 
 from app.rates_model import RatesRub
 from app.settings import app_settings
-
-# todo catch signint
 
 
 async def main(throttling_time: float, max_iterations: Optional[int] = None) -> Counter:
@@ -51,22 +53,59 @@ async def main(throttling_time: float, max_iterations: Optional[int] = None) -> 
     return cnt
 
 
-async def _save_rates(cash_rates: RatesRub, forex_rates: RatesRub) -> bool:
+async def _save_rates(cash_rates: RatesRub, forex_rates: RatesRub) -> None:
     # todo impl
     # todo test
     pass
 
 
 async def _get_cash_rates() -> RatesRub:
-    # todo impl
-    # todo test
-    pass
+    supported_currencies = {
+        # code: exchange factor
+        'eur': 1,
+        'czk': 10,
+        'usd': 1,
+    }
+    rates = {}
+    async with httpx.AsyncClient() as client:
+        for currency, factor in supported_currencies.items():
+            try:  # noqa: WPS229
+                response = await client.get(
+                    f'https://blagodatka.ru/detailed/{currency}',
+                    timeout=app_settings.http_timeout,
+                )
+                response.raise_for_status()
+            except httpx.HTTPError:
+                raise RuntimeError('network error')
+
+            try:
+                rate = _parse_ligovka_rate(response.text)
+            except RuntimeError as exc:
+                raise RuntimeError('parsing error') from exc
+
+            rates[currency] = rate / Decimal(factor)
+
+    return RatesRub(**rates)
 
 
 async def _get_forex_rates() -> RatesRub:
     # todo impl
     # todo test
     pass
+
+
+def _parse_ligovka_rate(html_source: str) -> Decimal:
+    try:
+        html_rate = etree.HTML(html_source).cssselect('.table_course tr')[2]
+    except (AttributeError, IndexError):
+        raise RuntimeError('rates not found')
+
+    try:
+        buy_rate, sell_rate = html_rate.cssselect('.money_price')
+    except ValueError:
+        raise RuntimeError('rates corrupted')
+
+    return (Decimal(sell_rate.text) + Decimal(buy_rate.text)) / Decimal(2)
 
 
 if __name__ == '__main__':

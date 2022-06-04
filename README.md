@@ -48,8 +48,9 @@ TODO
 - [x] mvp repo
 - [x] linters + tests in CI
 
-- [ ] background live update cash rate (\[CZK|EUR|USD\].RUB)
+- [x] background live update cash rate (\[CZK|EUR|USD\].RUB)
 - [ ] background live update forex rate (\[CZK|EUR|USD\].RUB)
+- [ ] save rates to redis
 - [ ] deploy task to server in CI
 
 - [ ] bot /help & /start

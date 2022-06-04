@@ -1,5 +1,6 @@
 [flake8]
 max-line-length = 125
+max-local-variables = 7
 
 ignore =
     DAR101,  # Missing parameter(s) in Docstring
