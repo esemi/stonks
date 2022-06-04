@@ -16,13 +16,39 @@ $ pip install -U poetry pip setuptools
 $ poetry install
 ```
 
+Create env file to override default config
+```bash
+cat > .env << EOF
+throttling_time=2.0
+debug=true
+EOF
+```
+
+### Local run tests
+```shell
+$ pytest --cov=app
+```
+
+### Local run background task
+```
+python -m app.rates_update_task
+```
+
+### Local run flake
+```
+poetry run flake8 app/
+```
+### Lokal run MyPy
+```
+poetry run mypy app/
+```
 
 TODO
 ---
 - [x] mvp repo
-- [ ] linters + tests in CI
+- [x] linters + tests in CI
 
-- [ ] background live update ligovka rate (\[CZK|EUR|USD\].RUB)
+- [ ] background live update cash rate (\[CZK|EUR|USD\].RUB)
 - [ ] background live update forex rate (\[CZK|EUR|USD\].RUB)
 - [ ] deploy task to server in CI
 

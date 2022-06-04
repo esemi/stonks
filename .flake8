@@ -1,0 +1,14 @@
+[flake8]
+max-line-length = 125
+
+ignore =
+    DAR101,  # Missing parameter(s) in Docstring
+    DAR201,  # Missing "Returns" in Docstring
+    WPS237,  # Found a too complex `f` string
+    WPS305,  # F-strings is OK
+    WPS306,  # Used dataclasses
+    S410,    # Using etree to parse untrusted XML data is known to be vulnerable to XML attacks.
+
+per-file-ignores =
+    #  WPS432:  Found magic number: 600.0
+    app/settings.py: WPS432
