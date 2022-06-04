@@ -4,6 +4,7 @@ import asyncio
 import logging
 from collections import Counter
 from decimal import Decimal
+from json import JSONDecodeError
 from typing import Optional
 
 import httpx
@@ -89,9 +90,25 @@ async def _get_cash_rates() -> RatesRub:
 
 
 async def _get_forex_rates() -> RatesRub:
-    # todo impl
-    # todo test
-    pass
+    async with httpx.AsyncClient() as client:
+        try:  # noqa: WPS229
+            response = await client.get(
+                'https://api.exchangerate.host/latest?base=RUB',
+                timeout=app_settings.http_timeout,
+            )
+            response.raise_for_status()
+        except httpx.HTTPError:
+            raise RuntimeError('network error')
+
+    try:  # noqa: WPS229
+        rates = response.json(strict=False)['rates']
+        return RatesRub(
+            czk=Decimal(1) / Decimal(rates.get('CZK')),
+            eur=Decimal(1) / Decimal(rates.get('EUR')),
+            usd=Decimal(1) / Decimal(rates.get('USD')),
+        )
+    except (JSONDecodeError, TypeError) as exc:
+        raise RuntimeError('parsing error') from exc
 
 
 def _parse_ligovka_rate(html_source: str) -> Decimal:

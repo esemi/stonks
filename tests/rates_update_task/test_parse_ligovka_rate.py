@@ -109,4 +109,3 @@ async def test_parse_ligovka_rate_corrupted_html():
 async def test_parse_ligovka_rate_invalid_html(payload):
     with pytest.raises(RuntimeError, match='rates not found'):
         _parse_ligovka_rate(payload)
-

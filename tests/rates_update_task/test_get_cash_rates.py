@@ -1,9 +1,9 @@
+import httpx
 import pytest
+import respx
 
 from app.rates_model import RatesRub
 from app.rates_update_task import _get_cash_rates
-import respx
-import httpx
 
 
 async def test_get_cash_rates_happy_path():

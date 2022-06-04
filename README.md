@@ -49,7 +49,7 @@ TODO
 - [x] linters + tests in CI
 
 - [x] background live update cash rate (\[CZK|EUR|USD\].RUB)
-- [ ] background live update forex rate (\[CZK|EUR|USD\].RUB)
+- [x] background live update forex rate (\[CZK|EUR|USD\].RUB)
 - [ ] save rates to redis
 - [ ] deploy task to server in CI
 
@@ -58,5 +58,5 @@ TODO
 - [ ] bot inline cmd
 - [ ] deploy bot to server
 
-- [ ] setup to tmg chanel
+- [ ] setup to tlg chanel
 - [ ] readme update
