@@ -15,6 +15,7 @@ $ cd stonks
 $ python3.9 -m venv venv
 $ source venv/bin/activate
 $ pip install -U poetry pip setuptools
+$ poetry config virtualenvs.create false --local
 $ poetry install
 ```
 
@@ -26,23 +27,20 @@ debug=true
 EOF
 ```
 
-### Local run tests
+### Run tests
 ```shell
 $ pytest --cov=app
 ```
 
-### Local run background task
+### Run background task
 ```
 python -m app.rates_update_task
 ```
 
-### Local run flake
+### Run linters
 ```
-poetry run flake8 app/
-```
-### Local run MyPy
-```
-poetry run mypy app/
+$ poetry run mypy app/
+$ poetry run flake8 app/
 ```
 
 TODO
@@ -53,7 +51,7 @@ TODO
 - [x] background live update cash rate (\[CZK|EUR|USD\].RUB)
 - [x] background live update forex rate (\[CZK|EUR|USD\].RUB)
 - [x] save rates to redis
-- [ ] deploy task to server in CI
+- [x] deploy task to server in CI
 
 - [ ] bot /help & /start
 - [ ] bot /rates

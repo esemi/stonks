@@ -1,0 +1,60 @@
+name: deploy
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  on-success:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+      - uses: actions/setup-python@v3
+        with:
+          python-version: '3.9'
+
+      - name: Install dependencies
+        run: |
+          pip install poetry
+          poetry --version
+          poetry install
+
+      - uses: shogo82148/actions-setup-redis@v1
+        with:
+          redis-version: 'latest'
+      - run: redis-cli ping
+
+      - name: Run tests
+        run: |
+          poetry run pytest -ra -v --cov=app
+
+      - name: deploy
+        uses: cross-the-world/ssh-scp-ssh-pipelines@v1.1.4
+        env:
+          TARGET_DIR: /home/${{ secrets.SSH_USERNAME }}
+          VENV_BIN: venv/bin
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          user: ${{ secrets.SSH_USERNAME }}
+          pass: ${{ secrets.SSH_PASSWORD }}
+          port: 22
+          connect_timeout: 10s
+          first_ssh: |-
+            mkdir -p app
+            mkdir -p logs
+            test -d venv || python3.9 -m venv venv
+            touch .env
+
+          scp: |-
+            './app/*' => $TARGET_DIR/app/
+            ./poetry.lock => $TARGET_DIR
+            ./pyproject.toml => $TARGET_DIR
+
+          last_ssh: |-
+            $VENV_BIN/pip install --no-cache-dir poetry pip setuptools --upgrade
+            $VENV_BIN/poetry config virtualenvs.create false --local
+            $VENV_BIN/poetry install --no-dev
+            $VENV_BIN/pip cache purge
+            supervisorctl restart stonks:*
