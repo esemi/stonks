@@ -3,6 +3,7 @@
 import asyncio
 import logging
 from collections import Counter
+from datetime import datetime
 from decimal import Decimal
 from json import JSONDecodeError
 from typing import Optional
@@ -10,7 +11,8 @@ from typing import Optional
 import httpx
 from lxml import etree
 
-from app.rates_model import RatesRub
+from app import storage
+from app.rates_model import RatesRub, SummaryRates
 from app.settings import app_settings
 
 
@@ -34,7 +36,7 @@ async def main(throttling_time: float, max_iterations: Optional[int] = None) -> 
         if cnt['iteration'] > 1:
             await asyncio.sleep(throttling_time)
 
-        logging.info(f'Current iteration is {cnt}')
+        logging.info(f'Current iteration {cnt=}')
 
         try:
             cash_rates, forex_rates = await asyncio.gather(
@@ -55,9 +57,13 @@ async def main(throttling_time: float, max_iterations: Optional[int] = None) -> 
 
 
 async def _save_rates(cash_rates: RatesRub, forex_rates: RatesRub) -> None:
-    # todo impl
     # todo test
-    pass
+    summary_rates = SummaryRates(
+        created_at=datetime.utcnow(),
+        cash=cash_rates,
+        forex=forex_rates,
+    )
+    await storage.save_rates(summary_rates)
 
 
 async def _get_cash_rates() -> RatesRub:

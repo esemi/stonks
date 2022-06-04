@@ -1,4 +1,6 @@
-# stonks
+Stonks telegram bot
+---
+[![tests](https://github.com/esemi/stonks/actions/workflows/tests.yml/badge.svg?branch=master)](https://github.com/esemi/stonks/actions/workflows/tests.yml)
 
 
 ### Pre-requirements
@@ -38,7 +40,7 @@ python -m app.rates_update_task
 ```
 poetry run flake8 app/
 ```
-### Lokal run MyPy
+### Local run MyPy
 ```
 poetry run mypy app/
 ```
@@ -50,7 +52,7 @@ TODO
 
 - [x] background live update cash rate (\[CZK|EUR|USD\].RUB)
 - [x] background live update forex rate (\[CZK|EUR|USD\].RUB)
-- [ ] save rates to redis
+- [x] save rates to redis
 - [ ] deploy task to server in CI
 
 - [ ] bot /help & /start
