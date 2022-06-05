@@ -10,6 +10,7 @@ from app.settings import app_settings
 
 async def welcome_handler(message: types.Message) -> None:
     """Display bot usage."""
+    # todo Usage and description and links
     await message.reply("Hi! I'm Stonks&Gents Bot!\nTouch me by /stonks command.")
 
 
@@ -19,19 +20,23 @@ async def current_rates_handler(message: types.Message) -> None:
 
     table = PrettyTable()
     table.field_names = ['', 'Stonks', 'Gents', 'Diff']
+    table.align = 'r'
     for code in app_settings.supported_currencies:
         stonks_rate = getattr(actual_rates.forex, code)
         gents_rate = getattr(actual_rates.cash, code)
         diff = gents_rate - stonks_rate
         table.add_row([
-            f'{code.upper()}.RUB',
+            code.upper(),
             '{0:.2f}'.format(stonks_rate),
             '{0:.2f}'.format(gents_rate),
             '{0:.2f}%'.format(diff / stonks_rate * 100),
         ])
 
+    table_content = table.get_string(
+        border=False,
+    )
     await message.answer(
-        text=f'{actual_rates.created_at.strftime("%d.%m.%Y %H:%M UTC")}\n<pre>{table}</pre>',
+        text=f'<pre>{table_content}</pre>\n\n<i>{actual_rates.created_at.strftime("%d.%m.%Y %H:%M UTC")}</i>',
         parse_mode='HTML',
         disable_web_page_preview=True,
     )
