@@ -3,11 +3,11 @@ import pytest
 import respx
 
 from app.rates_model import RatesRub
-from app.rates_update_task import _get_forex_rates
+from app.forex_rates import get_forex_rates
 
 
 async def test_get_forex_rates_happy_path():
-    res = await _get_forex_rates()
+    res = await get_forex_rates()
 
     assert isinstance(res, RatesRub)
     assert res.czk < 10
@@ -20,7 +20,7 @@ async def test_get_forex_rates_network_error(respx_mock):
     respx_mock.get("/latest?base=RUB").mock(return_value=httpx.Response(502))
 
     with pytest.raises(RuntimeError, match='network error'):
-        await _get_forex_rates()
+        await get_forex_rates()
 
 
 @pytest.mark.parametrize('payload', [
@@ -31,4 +31,4 @@ async def test_get_forex_rates_parsing_error(respx_mock, payload: str):
     respx_mock.get("https://api.exchangerate.host/latest?base=RUB").mock(return_value=httpx.Response(200, text=payload))
 
     with pytest.raises(RuntimeError, match='parsing error'):
-        await _get_forex_rates()
+        await get_forex_rates()

@@ -3,8 +3,6 @@
 [![tests](https://github.com/esemi/stonks/actions/workflows/tests.yml/badge.svg?branch=master)](https://github.com/esemi/stonks/actions/workflows/tests.yml)
 
 
-
-
 ### Pre-requirements
 - [redis server up and running](https://redis.io/docs/getting-started/installation/)
 - [python 3.9+](https://www.python.org/downloads/)
@@ -71,5 +69,5 @@ TODO
 - [x] fill bot settings (group add needed)
 - [x] save usage stats
 - [x] add bot to semrush.CZK group
+- [x] sigint and correct shutdown
 - [ ] readme update - description, logs link, 
-- [ ] sigint and correct shutdown

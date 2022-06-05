@@ -2,21 +2,27 @@
 
 import asyncio
 import logging
+import signal
 from collections import Counter
 from datetime import datetime
-from decimal import Decimal
-from json import JSONDecodeError
 from typing import Optional
 
-import httpx
-from lxml import etree
-
 from app import storage
+from app.cash_rates import get_cash_rates
+from app.forex_rates import get_forex_rates
 from app.rates_model import RatesRub, SummaryRates
 from app.settings import app_settings
 
+FORCE_SHUTDOWN = False
 
-async def main(throttling_time: float, max_iterations: Optional[int] = None) -> Counter:
+
+def sigint_handler(current_signal, frame) -> None:  # type: ignore
+    """Handle correct signal for restart service."""
+    global FORCE_SHUTDOWN  # noqa: WPS420
+    FORCE_SHUTDOWN = True  # noqa: WPS442
+
+
+async def main(throttling_max_time: float, max_iterations: Optional[int] = None) -> Counter:  # noqa: WPS231
     """
     Background task for update rates.
 
@@ -31,29 +37,46 @@ async def main(throttling_time: float, max_iterations: Optional[int] = None) -> 
         fails=0,
         success=0,
     )
+    throttling_timer: float = 0
+    throttling_timer_chunk: float = min(app_settings.throttling_min_time, throttling_max_time)
     while not max_iterations or cnt['iteration'] < max_iterations:
-        cnt['iteration'] += 1
-        if cnt['iteration'] > 1:
-            await asyncio.sleep(throttling_time)
+        if FORCE_SHUTDOWN:
+            break
 
+        if cnt['iteration']:
+            if throttling_timer < throttling_max_time:
+                logging.debug(f'sleep chunk time {throttling_timer=} {throttling_max_time}')
+                throttling_timer += throttling_timer_chunk
+                await asyncio.sleep(throttling_timer_chunk)
+                continue
+            else:
+                logging.debug('sleep time end')
+                throttling_timer = 0
+
+        cnt['iteration'] += 1
         logging.info(f'Current iteration {cnt=}')
 
-        try:
-            cash_rates, forex_rates = await asyncio.gather(
-                _get_cash_rates(),
-                _get_forex_rates(),
-            )
-        except RuntimeError as exc:
-            cnt['fails'] += 1
-            logging.warning(f'exception in getting rates process {exc}')
-            continue
+        ok = await _update_rate()
+        cnt['success' if ok else 'fails'] += 1
 
-        logging.info(f'Get rates: {cash_rates=}, {forex_rates=}')
-
-        await _save_rates(cash_rates, forex_rates)
-        cnt['success'] += 1
-
+    logging.info(f'shutdown {cnt=}')
     return cnt
+
+
+async def _update_rate() -> bool:
+    try:
+        cash_rates, forex_rates = await asyncio.gather(
+            get_cash_rates(),
+            get_forex_rates(),
+        )
+    except RuntimeError as exc:
+        logging.warning(f'exception in getting rates process {exc}')
+        return False
+
+    logging.info(f'Get rates: {cash_rates=}, {forex_rates=}')
+
+    await _save_rates(cash_rates, forex_rates)
+    return True
 
 
 async def _save_rates(cash_rates: RatesRub, forex_rates: RatesRub) -> None:
@@ -65,77 +88,15 @@ async def _save_rates(cash_rates: RatesRub, forex_rates: RatesRub) -> None:
     await storage.save_rates(summary_rates)
 
 
-async def _get_cash_rates() -> RatesRub:
-    currency_factor = {
-        # code: exchange factor
-        'czk': 10,
-    }
-    rates = {}
-    async with httpx.AsyncClient() as client:
-        for currency in app_settings.supported_currencies:
-            try:  # noqa: WPS229
-                response = await client.get(
-                    f'https://blagodatka.ru/detailed/{currency}',
-                    timeout=app_settings.http_timeout,
-                )
-                response.raise_for_status()
-            except httpx.HTTPError:
-                raise RuntimeError('network error')
-
-            try:
-                rate = _parse_ligovka_rate(response.text)
-            except RuntimeError as exc:
-                raise RuntimeError('parsing error') from exc
-
-            rates[currency] = rate / Decimal(currency_factor.get(currency, 1))
-
-    return RatesRub(**rates)
-
-
-async def _get_forex_rates() -> RatesRub:
-    async with httpx.AsyncClient() as client:
-        try:  # noqa: WPS229
-            response = await client.get(
-                'https://api.exchangerate.host/latest?base=RUB',
-                timeout=app_settings.http_timeout,
-            )
-            response.raise_for_status()
-        except httpx.HTTPError:
-            raise RuntimeError('network error')
-
-    try:  # noqa: WPS229
-        rates = response.json(strict=False)['rates']
-        parsed_rates = {
-            code: Decimal(1) / Decimal(rates.get(code.upper()))
-            for code in app_settings.supported_currencies
-        }
-    except (JSONDecodeError, TypeError) as exc:
-        raise RuntimeError('parsing error') from exc
-
-    return RatesRub(**parsed_rates)
-
-
-def _parse_ligovka_rate(html_source: str) -> Decimal:
-    try:
-        html_rate = etree.HTML(html_source).cssselect('.table_course tr')[2]
-    except (AttributeError, IndexError):
-        raise RuntimeError('rates not found')
-
-    try:
-        buy_rate, sell_rate = html_rate.cssselect('.money_price')
-    except ValueError:
-        raise RuntimeError('rates corrupted')
-
-    return (Decimal(sell_rate.text) + Decimal(buy_rate.text)) / Decimal(2)
-
-
 if __name__ == '__main__':
     logging.basicConfig(
         level=logging.DEBUG if app_settings.debug else logging.INFO,
         format='%(asctime)s %(levelname)-8s %(message)s',  # noqa: WPS323
     )
 
+    signal.signal(signal.SIGINT, sigint_handler)
+
     asyncio.run(main(
-        throttling_time=app_settings.throttling_time,
+        throttling_max_time=app_settings.throttling_time,
         max_iterations=None,
     ))

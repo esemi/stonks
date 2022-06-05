@@ -10,7 +10,8 @@ class AppSettings(BaseSettings):
 
     redis_dsn: RedisDsn = Field('redis://localhost:6379/2')
     http_timeout: int = Field(35, description='rates-API request timeout')
-    throttling_time: float = Field(60.0 * 5.0, description='Seconds between update rate tries')
+    throttling_time: float = Field(60.0 * 5, description='Seconds between update rate tries')
+    throttling_min_time: float = Field(10.0, description='Minimal seconds between update rate tries.')
     debug: bool = Field(default=False)
     telegram_token: str
     supported_currencies: List[str] = ['czk', 'eur', 'usd']
