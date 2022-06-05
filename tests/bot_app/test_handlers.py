@@ -10,7 +10,7 @@ async def test_welcome_handler():
     message_mock.reply.assert_called_once()
 
 
-async def test_current_rates_handler():
+async def test_current_rates_handler(fixture_filled_rates):
     message_mock = AsyncMock()
 
     await current_rates_handler(message=message_mock)

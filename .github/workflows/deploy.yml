@@ -29,7 +29,7 @@ jobs:
       - name: Run tests
         run: |
           echo 'telegram_token=${{ secrets.TELEGRAM_TEST_TOKEN }}' > .env
-          poetry run pytest -ra -v --cov=app
+          poetry run pytest
 
       - name: deploy
         uses: cross-the-world/ssh-scp-ssh-pipelines@v1.1.4

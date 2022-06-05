@@ -1,11 +1,13 @@
 from datetime import datetime
 from decimal import Decimal
 
+import pytest
+
 from app.rates_model import SummaryRates, RatesRub
-from app.storage import save_rates, get_rates
 
 
-async def test_save_rates_happy_path():
+@pytest.fixture
+async def fixture_filled_rates(mocker):
     payload = SummaryRates(
         created_at=datetime.utcnow(),
         cash=RatesRub(
@@ -19,11 +21,4 @@ async def test_save_rates_happy_path():
             usd=Decimal('67.777779'),
         ),
     )
-
-    res = await save_rates(payload)
-
-    saved_rates = await get_rates()
-    assert res is None
-    assert isinstance(saved_rates.created_at, datetime)
-    assert saved_rates.cash.eur == Decimal('65.1')
-    assert saved_rates.forex.usd == Decimal('67.777779')
+    mocker.patch('app.bot_app.storage.get_rates', return_value=payload)

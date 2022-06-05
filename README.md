@@ -64,10 +64,10 @@ TODO
 - [x] deploy task to server in CI
 
 - [x] bot /help cmd
-- [ ] bot /stonks cmd
-- [ ] deploy bot to server
+- [x] bot /stonks cmd
+- [x] deploy bot to server
 
-- [ ] fill bot description
-- [ ] fill bot settings (group add needed)
+- [x] fill bot description
+- [x] fill bot settings (group add needed)
 - [ ] add bot to semrush.CZK group
 - [ ] readme update

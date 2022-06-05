@@ -17,7 +17,7 @@ async def test_get_cash_rates_happy_path():
 
 @respx.mock(base_url="https://blagodatka.ru/detailed", assert_all_mocked=False)
 async def test_get_cash_rates_network_error(respx_mock):
-    respx_mock.get("/eur").mock(return_value=httpx.Response(502))
+    respx_mock.get("/czk").mock(return_value=httpx.Response(502))
 
     with pytest.raises(RuntimeError, match='network error'):
         await _get_cash_rates()

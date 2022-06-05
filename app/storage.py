@@ -25,7 +25,7 @@ async def get_rates() -> SummaryRates:
     forex_rates = await db_pool.hgetall(FOREX_RATES_KEY)
     created_at = await db_pool.get(RATES_UPDATE_DATE_KEY)
     return SummaryRates(
-        created_at=created_at,
+        created_at=datetime.fromisoformat(created_at),
         cash=RatesRub(**{
             currency: Decimal(rate)
             for currency, rate in cash_rates.items()

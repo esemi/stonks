@@ -1,5 +1,6 @@
 """Application settings."""
 import os
+from typing import List
 
 from pydantic import BaseSettings, Field, RedisDsn
 
@@ -12,6 +13,7 @@ class AppSettings(BaseSettings):
     throttling_time: float = Field(600.0, description='Seconds between update rate tries')
     debug: bool = Field(default=False)
     telegram_token: str
+    supported_currencies: List[str] = ['czk', 'eur', 'usd']
 
 
 app_settings = AppSettings(

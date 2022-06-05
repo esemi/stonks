@@ -57,7 +57,6 @@ async def main(throttling_time: float, max_iterations: Optional[int] = None) -> 
 
 
 async def _save_rates(cash_rates: RatesRub, forex_rates: RatesRub) -> None:
-    # todo test
     summary_rates = SummaryRates(
         created_at=datetime.utcnow(),
         cash=cash_rates,
@@ -67,15 +66,13 @@ async def _save_rates(cash_rates: RatesRub, forex_rates: RatesRub) -> None:
 
 
 async def _get_cash_rates() -> RatesRub:
-    supported_currencies = {
+    currency_factor = {
         # code: exchange factor
-        'eur': 1,
         'czk': 10,
-        'usd': 1,
     }
     rates = {}
     async with httpx.AsyncClient() as client:
-        for currency, factor in supported_currencies.items():
+        for currency in app_settings.supported_currencies:
             try:  # noqa: WPS229
                 response = await client.get(
                     f'https://blagodatka.ru/detailed/{currency}',
@@ -90,7 +87,7 @@ async def _get_cash_rates() -> RatesRub:
             except RuntimeError as exc:
                 raise RuntimeError('parsing error') from exc
 
-            rates[currency] = rate / Decimal(factor)
+            rates[currency] = rate / Decimal(currency_factor.get(currency, 1))
 
     return RatesRub(**rates)
 
@@ -108,13 +105,14 @@ async def _get_forex_rates() -> RatesRub:
 
     try:  # noqa: WPS229
         rates = response.json(strict=False)['rates']
-        return RatesRub(
-            czk=Decimal(1) / Decimal(rates.get('CZK')),
-            eur=Decimal(1) / Decimal(rates.get('EUR')),
-            usd=Decimal(1) / Decimal(rates.get('USD')),
-        )
+        parsed_rates = {
+            code: Decimal(1) / Decimal(rates.get(code.upper()))
+            for code in app_settings.supported_currencies
+        }
     except (JSONDecodeError, TypeError) as exc:
         raise RuntimeError('parsing error') from exc
+
+    return RatesRub(**parsed_rates)
 
 
 def _parse_ligovka_rate(html_source: str) -> Decimal:
