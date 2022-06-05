@@ -3,6 +3,13 @@
 [![tests](https://github.com/esemi/stonks/actions/workflows/tests.yml/badge.svg?branch=master)](https://github.com/esemi/stonks/actions/workflows/tests.yml)
 
 
+Simple telegram bot for display actual currency exchange rates from Forex (int) and offline point (Russia).
+
+Support USD.RUB, CZK.RUB and EUR.RUB pairs.
+
+Used for p2p exchange chats.
+
+
 ### Pre-requirements
 - [redis server up and running](https://redis.io/docs/getting-started/installation/)
 - [python 3.9+](https://www.python.org/downloads/)
@@ -50,24 +57,8 @@ python -m app.rates_update_task
 python -m app.bot_app
 ```
 
-
-TODO
----
-- [x] mvp repo
-- [x] linters + tests in CI
-
-- [x] background live update cash rate (\[CZK|EUR|USD\].RUB)
-- [x] background live update forex rate (\[CZK|EUR|USD\].RUB)
-- [x] save rates to redis
-- [x] deploy task to server in CI
-
-- [x] bot /help cmd
-- [x] bot /stonks cmd
-- [x] deploy bot to server
-
-- [x] fill bot description
-- [x] fill bot settings (group add needed)
-- [x] save usage stats
-- [x] add bot to semrush.CZK group
-- [x] sigint and correct shutdown
-- [ ] readme update - description, logs link, 
+### Links
+- [production logs](http://stonks.esemi.ru/)
+- [Stonks & Gents telegram bot](https://t.me/stonks_and_gents_bot)
+- [Forex rates provider](https://exchangerate.host/)
+- [Cash rates provider](https://blagodatka.ru/)
