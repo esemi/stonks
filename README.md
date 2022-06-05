@@ -1,4 +1,4 @@
-[Stonks & Gents telegram bot](t.me/stonks_and_gents_bot)
+[Stonks & Gents telegram bot](https://t.me/stonks_and_gents_bot)
 ---
 [![tests](https://github.com/esemi/stonks/actions/workflows/tests.yml/badge.svg?branch=master)](https://github.com/esemi/stonks/actions/workflows/tests.yml)
 
