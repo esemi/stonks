@@ -11,6 +11,8 @@ from app.settings import app_settings
 RATES_UPDATE_DATE_KEY = 'stonks:rates:created_at'
 CASH_RATES_KEY = 'stonks:rates:cash'
 FOREX_RATES_KEY = 'stonks:rates:forex'
+BOT_STATS_COMMAND_KEY = 'stonks:stats:command:{0}'
+BOT_STATS_CHAT_KEY = 'stonks:stats:chat:{0}'
 
 db_pool: aioredis.Redis = aioredis.from_url(
     app_settings.redis_dsn,
@@ -48,3 +50,9 @@ async def save_rates(rates: SummaryRates) -> None:
         for currency, rate in asdict(rates.forex).items()
     })
     await db_pool.set(RATES_UPDATE_DATE_KEY, str(datetime.utcnow()))
+
+
+async def inc_stats(method: str, chat_id: int) -> None:
+    """Save call counter."""
+    await db_pool.incr(BOT_STATS_COMMAND_KEY.format(method))
+    await db_pool.incr(BOT_STATS_CHAT_KEY.format(chat_id))

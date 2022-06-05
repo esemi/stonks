@@ -69,5 +69,7 @@ TODO
 
 - [x] fill bot description
 - [x] fill bot settings (group add needed)
-- [ ] add bot to semrush.CZK group
-- [ ] readme update
+- [x] save usage stats
+- [x] add bot to semrush.CZK group
+- [ ] readme update - description, logs link, 
+- [ ] sigint and correct shutdown

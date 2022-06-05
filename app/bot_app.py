@@ -10,6 +10,8 @@ from app.settings import app_settings
 
 async def welcome_handler(message: types.Message) -> None:
     """Display bot usage."""
+    await _save_stat(message)
+
     reply = '\n'.join((
         "Hi! I'm Stonks & Gents Bot!",
         'And I know about currency exchange rates ;)',
@@ -31,6 +33,8 @@ async def welcome_handler(message: types.Message) -> None:
 
 async def current_rates_handler(message: types.Message) -> None:
     """Display current exchange rates for cash and forex sources."""
+    await _save_stat(message)
+
     actual_rates = await storage.get_rates()
 
     table = PrettyTable()
@@ -54,6 +58,13 @@ async def current_rates_handler(message: types.Message) -> None:
         text=f'<pre>{table_content}</pre>\n\n<i>{actual_rates.created_at.strftime("%d.%m.%Y %H:%M UTC")}</i>',
         parse_mode='HTML',
         disable_web_page_preview=True,
+    )
+
+
+async def _save_stat(message: types.Message) -> None:
+    await storage.inc_stats(
+        message.get_command(),
+        message.chat.id,
     )
 
 
