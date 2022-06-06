@@ -32,7 +32,7 @@ async def main(throttling_max_time: float, max_iterations: Optional[int] = None)
 
     Support USD.RUB, CZK.RUB and EUR.RUB
     """
-    cnt = Counter(
+    cnt: Counter = Counter(
         iteration=0,
         fails=0,
         success=0,

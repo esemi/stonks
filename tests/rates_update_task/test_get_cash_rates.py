@@ -6,7 +6,7 @@ from app.rates_model import RatesRub
 from app.cash_rates import get_cash_rates
 
 
-async def test_get_cash_rates_happy_path():
+async def test_get_cash_rates_contract():
     res = await get_cash_rates()
 
     assert isinstance(res, RatesRub)

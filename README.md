@@ -14,7 +14,7 @@ Used for p2p exchange chats.
 - [redis server up and running](https://redis.io/docs/getting-started/installation/)
 - [python 3.9+](https://www.python.org/downloads/)
 - [telegram bot token](https://t.me/botfather)
-
+- [unofficial yahoo finance token](https://www.yahoofinanceapi.com/dashboard)
 
 ### Local setup
 ```shell
@@ -33,6 +33,7 @@ cat > .env << EOF
 throttling_time=2.0
 debug=true
 telegram_token=U_TELEGRAM_TOKEN
+yahoo_api_token=U_YAHOO_TOKEN
 EOF
 ```
 
