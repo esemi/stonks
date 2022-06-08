@@ -3,7 +3,6 @@ Forex market rates scrapper from yahoo.finance API.
 
 @see https://www.yahoofinanceapi.com/
 """
-
 from decimal import Decimal, InvalidOperation
 from json import JSONDecodeError
 
@@ -41,8 +40,8 @@ async def get_forex_rates() -> RatesRub:
                 timeout=app_settings.http_timeout,
             )
             response.raise_for_status()
-        except httpx.HTTPError:
-            raise RuntimeError('network error')
+        except httpx.HTTPError as fetch_exc:
+            raise RuntimeError('network error') from fetch_exc
 
     try:  # noqa: WPS229
         rates = response.json(strict=False)['quoteResponse']['result']
@@ -51,8 +50,8 @@ async def get_forex_rates() -> RatesRub:
             for rate_source in rates
         }
         return RatesRub(**parsed_rates)
-    except (JSONDecodeError, KeyError, TypeError, InvalidOperation) as exc:
-        raise RuntimeError('parsing error') from exc
+    except (JSONDecodeError, KeyError, TypeError, InvalidOperation) as parsing_exc:
+        raise RuntimeError('parsing error') from parsing_exc
 
 
 def _calculate_ticker_price(ticker_info: dict) -> Decimal:

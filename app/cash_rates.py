@@ -29,13 +29,13 @@ async def get_cash_rates() -> RatesRub:
                     timeout=app_settings.http_timeout,
                 )
                 response.raise_for_status()
-            except httpx.HTTPError:
-                raise RuntimeError('network error')
+            except httpx.HTTPError as fetch_exc:
+                raise RuntimeError('network error') from fetch_exc
 
             try:
                 rate = _parse_ligovka_rate(response.text)
-            except RuntimeError as exc:
-                raise RuntimeError('parsing error') from exc
+            except RuntimeError as parsing_exc:
+                raise RuntimeError('parsing error') from parsing_exc
 
             rates[currency] = rate / Decimal(currency_factor.get(currency, 1))
 

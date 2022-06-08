@@ -70,7 +70,7 @@ async def _update_rate() -> bool:
             get_forex_rates(),
         )
     except RuntimeError as exc:
-        logging.warning(f'exception in getting rates process {exc}')
+        logging.warning(f'exception in getting rates process {exc}', exc_info=exc)
         return False
 
     logging.info(f'Get rates: {cash_rates=}, {forex_rates=}')

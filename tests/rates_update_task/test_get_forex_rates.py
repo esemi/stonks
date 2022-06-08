@@ -23,7 +23,7 @@ async def test_get_forex_rates_happy_path(mocked_forex_rates_api):
 @pytest.mark.skipif(
     not yahoo_api_configured(), reason="requires configured settings.yahoo_api_token"
 )
-async def test_get_forex_rates_contract(mocked_forex_rates_api):
+async def test_get_forex_rates_contract():
     res = await get_forex_rates()
 
     assert isinstance(res, RatesRub)
