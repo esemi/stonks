@@ -12,7 +12,7 @@ from app.settings import app_settings
 
 async def welcome_handler(message: types.Message) -> None:
     """Display bot usage."""
-    await _save_stat(message)
+    await _log_request(message)
 
     reply = '\n'.join((
         "Hi! I'm Stonks & Gents Bot!",
@@ -36,7 +36,7 @@ async def welcome_handler(message: types.Message) -> None:
 
 async def current_rates_handler(message: types.Message) -> None:
     """Display short info about exchange rates."""
-    await _save_stat(message)
+    await _log_request(message)
 
     actual_rates = await storage.get_rates()
 
@@ -61,7 +61,7 @@ async def current_rates_handler(message: types.Message) -> None:
 
 async def rate_details_handler(message: types.Message) -> None:
     """Display detailed exchange rates for cash and forex sources."""
-    await _save_stat(message)
+    await _log_request(message)
 
     actual_rates = await storage.get_rates()
 
@@ -105,11 +105,17 @@ def _calculate_currency_rates(actual_rates: SummaryRates, currency_code: str) ->
     ]
 
 
-async def _save_stat(message: types.Message) -> None:
+async def _log_request(message: types.Message) -> None:
     await storage.inc_stats(
         message.get_command(),
-        message.chat.id,
+        message.chat.username,
     )
+
+    logging.info('{0} call: username={1} from chat={2}'.format(
+        message.get_command(),
+        message.from_user.username,
+        message.chat.username,
+    ))
 
 
 def _return_number_sign(amount: Decimal) -> str:
