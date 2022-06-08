@@ -1,10 +1,12 @@
 """Stonks telegram bot app."""
 import logging
+from decimal import Decimal
 
 from aiogram import Bot, Dispatcher, executor, types
 from prettytable import PrettyTable
 
 from app import storage
+from app.rates_model import SummaryRates
 from app.settings import app_settings
 
 
@@ -64,18 +66,13 @@ async def rate_details_handler(message: types.Message) -> None:
     actual_rates = await storage.get_rates()
 
     table = PrettyTable()
-    table.field_names = ['', 'Forex', 'Cash', 'Diff (%)']
+    table.field_names = ['', 'Forex', 'Cash', 'Avg']
     table.align = 'r'
     for code in app_settings.supported_currencies:
-        forex_rate = getattr(actual_rates.forex, code)
-        cash_rate = getattr(actual_rates.cash, code)
-        diff = cash_rate - forex_rate
-        table.add_row([
-            code.upper(),
-            '{0:.4f}'.format(forex_rate),
-            '{0:.4f}'.format(cash_rate),
-            '{0:.2f}%'.format(diff / forex_rate * 100),
-        ])
+        table.add_row(_calculate_currency_rates(
+            actual_rates=actual_rates,
+            currency_code=code,
+        ))
 
     table_content = table.get_string(
         border=True,
@@ -86,11 +83,37 @@ async def rate_details_handler(message: types.Message) -> None:
     )
 
 
+def _calculate_currency_rates(actual_rates: SummaryRates, currency_code: str) -> list[str]:
+    forex_rate = getattr(actual_rates.forex, currency_code)
+    cash_rate = getattr(actual_rates.cash, currency_code)
+    cash_diff = (cash_rate - forex_rate) / forex_rate * 100
+    avg_rate = (cash_rate + forex_rate) / 2
+    avg_diff = (avg_rate - forex_rate) / forex_rate * 100
+    return [
+        currency_code.upper(),
+        '{0:.4f}'.format(forex_rate),
+        '{0:.4f} ({1}{2:.2f}%)'.format(
+            cash_rate,
+            _return_number_sign(cash_diff),
+            cash_diff,
+        ),
+        '{0:.4f} ({1}{2:.2f}%)'.format(
+            avg_rate,
+            _return_number_sign(avg_diff),
+            avg_diff,
+        ),
+    ]
+
+
 async def _save_stat(message: types.Message) -> None:
     await storage.inc_stats(
         message.get_command(),
         message.chat.id,
     )
+
+
+def _return_number_sign(amount: Decimal) -> str:
+    return '+' if amount >= 0 else '-'
 
 
 def main() -> None:
