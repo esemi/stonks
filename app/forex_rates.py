@@ -1,64 +1,57 @@
-"""
-Forex market rates scrapper from yahoo.finance API.
+"""Forex exchange point rates scrapper."""
 
-@see https://www.yahoofinanceapi.com/
-"""
-from decimal import Decimal, InvalidOperation
-from json import JSONDecodeError
+from decimal import Decimal
 
 import httpx
+from lxml import etree
 
 from app.rates_model import RatesRub
 from app.settings import app_settings
 
-API_ENDPOINT = 'https://yfapi.net/v6/finance/quote'
+QUOTES_ENDPOINT = 'https://www.xe.com/currencyconverter/convert/'
 
 
 async def get_forex_rates() -> RatesRub:
     """
-    Return currency exchange rates from Yahoo finance.
+    Return forex currency exchange rates.
 
     Raises:
         RuntimeError: For network or parsing errors.
-
     """
-    api_request_params = {
-        'region': 'US',
-        'lang': 'en',
-        'symbols': ','.join([
-            f'{code.upper()}RUB=X'
-            for code in app_settings.supported_currencies
-        ]),
-    }
-
+    rates = {}
     async with httpx.AsyncClient() as client:
-        try:  # noqa: WPS229
-            response = await client.get(
-                url=API_ENDPOINT,
-                params=api_request_params,
-                headers={'X-API-KEY': app_settings.yahoo_api_token},
-                timeout=app_settings.http_timeout,
-            )
-            response.raise_for_status()
-        except httpx.HTTPError as fetch_exc:
-            raise RuntimeError('network error') from fetch_exc
+        for currency in app_settings.supported_currencies:
+            try:  # noqa: WPS229
+                response = await client.get(
+                    QUOTES_ENDPOINT,
+                    params={
+                        'Amount': 1,
+                        'From': currency.upper(),
+                        'To': 'RUB',
+                    },
+                    timeout=app_settings.http_timeout,
+                )
+                response.raise_for_status()
+            except httpx.HTTPError as fetch_exc:
+                raise RuntimeError('network error') from fetch_exc
 
-    try:  # noqa: WPS229
-        rates = response.json(strict=False)['quoteResponse']['result']
-        parsed_rates = {
-            _parse_ticker(rate_source): _calculate_ticker_price(rate_source)
-            for rate_source in rates
-        }
-        return RatesRub(**parsed_rates)
-    except (JSONDecodeError, KeyError, TypeError, InvalidOperation) as parsing_exc:
-        raise RuntimeError('parsing error') from parsing_exc
+            try:
+                rates[currency] = _parse_xe_rate(response.text)
+            except RuntimeError as parsing_exc:
+                raise RuntimeError('parsing error') from parsing_exc
 
-
-def _calculate_ticker_price(ticker_info: dict) -> Decimal:
-    ask = Decimal(ticker_info['ask'])
-    bid = Decimal(ticker_info['bid'])
-    return (ask + bid) / Decimal(2)
+    return RatesRub(**rates)
 
 
-def _parse_ticker(ticker_info: dict) -> str:
-    return ticker_info['symbol'][:3].lower()
+def _parse_xe_rate(html_source: str) -> Decimal:
+    stringify = etree.XPath('string()')
+    try:
+        html_rate = stringify(etree.HTML(html_source).xpath('//main/form//p')[1])
+
+    except (AttributeError, IndexError):
+        raise RuntimeError('rates not found')
+
+    try:
+        return Decimal(html_rate.replace('Russian Rubles', '').strip())
+    except ValueError:
+        raise RuntimeError('rates corrupted')
