@@ -8,6 +8,8 @@ from lxml import etree
 from app.rates_model import RatesRub
 from app.settings import app_settings
 
+QUOTES_ENDPOINT = 'https://blagodatka.ru/detailed/{0}'
+
 
 async def get_cash_rates() -> RatesRub:
     """
@@ -25,7 +27,7 @@ async def get_cash_rates() -> RatesRub:
         for currency in app_settings.supported_currencies:
             try:  # noqa: WPS229
                 response = await client.get(
-                    f'https://blagodatka.ru/detailed/{currency}',
+                    QUOTES_ENDPOINT.format(currency),
                     timeout=app_settings.http_timeout,
                 )
                 response.raise_for_status()

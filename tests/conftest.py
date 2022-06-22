@@ -2,10 +2,8 @@ import asyncio
 from datetime import datetime
 from decimal import Decimal
 
-import httpx
 import pytest
 
-from app.forex_rates import API_ENDPOINT
 from app.rates_model import SummaryRates, RatesRub
 
 
@@ -33,20 +31,3 @@ async def fixture_filled_rates(mocker) -> SummaryRates:
     )
     mocker.patch('app.storage.get_rates', return_value=payload)
     yield payload
-
-
-@pytest.fixture
-async def mocked_rates_request(respx_mock):
-    yield respx_mock.get(
-        f"{API_ENDPOINT}?region=US&lang=en&symbols=CZKRUB%3DX%2CEURRUB%3DX%2CUSDRUB%3DX",
-    )
-
-
-@pytest.fixture
-async def mocked_forex_rates_api(mocked_rates_request):
-    valid_response = """{"quoteResponse": {"result": [
-        {"symbol": "CZKRUB", "ask": 1.234, "bid": 1.345},
-        {"symbol": "USDRUB", "ask": 67.123, "bid": 70},
-        {"symbol": "EURRUB", "ask": 79.55, "bid": 87.123}
-    ]}}"""
-    yield mocked_rates_request.mock(return_value=httpx.Response(200, text=valid_response))
