@@ -33,7 +33,6 @@ cat > .env << EOF
 throttling_time=2.0
 debug=true
 telegram_token=U_TELEGRAM_TOKEN
-yahoo_api_token=U_YAHOO_TOKEN
 EOF
 ```
 
