@@ -14,7 +14,6 @@ class AppSettings(BaseSettings):
     throttling_min_time: float = 10.0
     debug: bool = Field(default=False)
     telegram_token: str
-    yahoo_api_token: str
     supported_currencies: List[str] = ['czk', 'eur', 'usd']
 
 

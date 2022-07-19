@@ -29,7 +29,6 @@ jobs:
       - name: Run tests
         run: |
           echo 'telegram_token=${{ secrets.TELEGRAM_TEST_TOKEN }}' > .env
-          echo 'yahoo_api_token=""' >> .env
           poetry run pytest
 
       - name: deploy
@@ -60,5 +59,4 @@ jobs:
             $VENV_BIN/poetry install --no-dev
             $VENV_BIN/pip cache purge
             echo 'telegram_token=${{ secrets.TELEGRAM_PROD_TOKEN }}' > .env
-            echo 'yahoo_api_token=${{ secrets.YAHOO_PROD_TOKEN }}' >> .env
             supervisorctl restart stonks:*
