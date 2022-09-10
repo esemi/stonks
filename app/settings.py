@@ -1,5 +1,6 @@
 """Application settings."""
 import os
+from decimal import Decimal
 from typing import List
 
 from pydantic import BaseSettings, Field, RedisDsn
@@ -12,6 +13,7 @@ class AppSettings(BaseSettings):
     http_timeout: int = Field(35, description='rates-API request timeout')
     throttling_time: float = Field(60.0 * 20, description='Seconds between update rate tries')
     throttling_min_time: float = 10.0
+    p2p_rate_discount: Decimal = Field(Decimal('0.15'), description='P2P rate discount from cash rates')
     debug: bool = Field(default=False)
     telegram_token: str
     supported_currencies: List[str] = ['czk', 'eur', 'usd']

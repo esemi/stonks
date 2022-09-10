@@ -28,6 +28,11 @@ async def fixture_filled_rates(mocker) -> SummaryRates:
             eur=Decimal('60.789'),
             usd=Decimal('67.777779'),
         ),
+        p2p=RatesRub(
+            czk=Decimal('3'),
+            eur=Decimal('64'),
+            usd=Decimal('73'),
+        ),
     )
     mocker.patch('app.storage.get_rates', return_value=payload)
     yield payload

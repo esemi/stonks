@@ -80,24 +80,30 @@ def _prepare_details_table(actual_rates: SummaryRates) -> str:
             field_names=[code.upper(), ''],
             align='l',
         )
-        forex_rate, cash_rate, avg_rate = _calculate_currency_rates(
+        forex_rate, cash_rate, avg_rate, p2p_rate = _calculate_currency_rates(
             actual_rates=actual_rates,
             currency_code=code,
         )
         table.add_row(['Forex', forex_rate])
         table.add_row(['Cash', cash_rate])
         table.add_row(['Avg', avg_rate])
+        if code != 'czk':
+            table.add_row(['p2p', p2p_rate])
 
         message_content.append(table.get_string(border=False))
     return '\n\n'.join(message_content)
 
 
-def _calculate_currency_rates(actual_rates: SummaryRates, currency_code: str) -> Tuple[str, str, str]:
+def _calculate_currency_rates(actual_rates: SummaryRates, currency_code: str) -> Tuple[str, str, str, str]:
     forex_rate = getattr(actual_rates.forex, currency_code)
     cash_rate = getattr(actual_rates.cash, currency_code)
+    p2p_rate = getattr(actual_rates.p2p, currency_code)
+
     cash_diff = (cash_rate - forex_rate) / forex_rate * 100
+    p2p_diff = (p2p_rate - forex_rate) / forex_rate * 100
     avg_rate = (cash_rate + forex_rate) / 2
     avg_diff = (avg_rate - forex_rate) / forex_rate * 100
+
     return (
         '{0:.4f}'.format(forex_rate),
         '{0:.4f} ({1}{2:.1f}%)'.format(
@@ -109,6 +115,11 @@ def _calculate_currency_rates(actual_rates: SummaryRates, currency_code: str) ->
             avg_rate,
             _return_number_sign(avg_diff),
             avg_diff,
+        ),
+        '{0:.4f} ({1}{2:.1f}%)'.format(
+            p2p_rate,
+            _return_number_sign(p2p_diff),
+            p2p_diff,
         ),
     )
 

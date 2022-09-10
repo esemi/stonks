@@ -21,3 +21,4 @@ class SummaryRates:
     created_at: datetime
     cash: RatesRub
     forex: RatesRub
+    p2p: RatesRub
