@@ -18,6 +18,11 @@ async def test_save_rates_happy_path():
             eur=Decimal('60.789'),
             usd=Decimal('67.777779'),
         ),
+        p2p=RatesRub(
+            czk=Decimal('3'),
+            eur=Decimal('64'),
+            usd=Decimal('73'),
+        ),
     )
 
     res = await save_rates(payload)
@@ -27,3 +32,4 @@ async def test_save_rates_happy_path():
     assert isinstance(saved_rates.created_at, datetime)
     assert saved_rates.cash.eur == Decimal('65.1')
     assert saved_rates.forex.usd == Decimal('67.777779')
+    assert saved_rates.p2p.usd == Decimal('73')
