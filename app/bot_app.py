@@ -109,17 +109,17 @@ def _calculate_currency_rates(actual_rates: SummaryRates, currency_code: str) ->
         '{0:.4f} ({1}{2:.1f}%)'.format(
             cash_rate,
             _return_number_sign(cash_diff),
-            cash_diff,
+            abs(cash_diff),
         ),
         '{0:.4f} ({1}{2:.1f}%)'.format(
             avg_rate,
             _return_number_sign(avg_diff),
-            avg_diff,
+            abs(avg_diff),
         ),
         '{0:.4f} ({1}{2:.1f}%)'.format(
             p2p_rate,
             _return_number_sign(p2p_diff),
-            p2p_diff,
+            abs(p2p_diff),
         ),
     )
 
