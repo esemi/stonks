@@ -14,9 +14,9 @@ class AppSettings(BaseSettings):
     http_user_agent: bytes = Field(
         default=b'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/74.0.3729.169 Safari/537.36',
     )
-    throttling_time: float = Field(60.0 * 20, description='Seconds between update rate tries')
+    throttling_time: float = Field(60.0 * 10, description='Seconds between update rate tries in seconds')
     throttling_min_time: float = 10.0
-    p2p_rate_discount: Decimal = Field(Decimal('0.15'), description='P2P rate discount from cash rates')
+    p2p_rate_discount: Decimal = Field(Decimal('0.15'), description='P2P rate discount from cash rates in ruble cents')
     debug: bool = Field(default=False)
     telegram_token: str
     supported_currencies: List[str] = ['czk', 'eur', 'usd']

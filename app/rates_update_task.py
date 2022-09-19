@@ -8,6 +8,7 @@ from datetime import datetime
 from typing import Optional
 
 from app import storage
+from app.bloomberg_rates import get_bloomberg_rates
 from app.cash_rates import get_cash_rates
 from app.forex_rates import get_forex_rates
 from app.p2p_rates import get_p2p_rates
@@ -67,9 +68,10 @@ async def main(throttling_max_time: float, max_iterations: Optional[int] = None)
 
 async def _update_rate() -> bool:
     try:
-        cash_rates, forex_rates = await asyncio.gather(
+        cash_rates, forex_rates, bloom_rates = await asyncio.gather(
             get_cash_rates(),
             get_forex_rates(),
+            get_bloomberg_rates()
         )
     except RuntimeError as exc:
         logging.warning(f'exception in getting rates process {exc}', exc_info=exc)
@@ -77,18 +79,24 @@ async def _update_rate() -> bool:
 
     p2p_rates = get_p2p_rates(cash_rates, forex_rates)
 
-    logging.info(f'Get rates: {cash_rates=}, {forex_rates=}, {p2p_rates=}')
+    logging.info(f'Get rates: {cash_rates=}, {forex_rates=}, {p2p_rates=}, {bloom_rates=}')
 
-    await _save_rates(cash_rates, forex_rates, p2p_rates)
+    await _save_rates(cash_rates, forex_rates, p2p_rates, bloom_rates)
     return True
 
 
-async def _save_rates(cash_rates: RatesRub, forex_rates: RatesRub, p2p_rates: RatesRub) -> None:
+async def _save_rates(
+    cash_rates: RatesRub,
+    forex_rates: RatesRub,
+    p2p_rates: RatesRub,
+    bloomberg_rates: RatesRub,
+) -> None:
     summary_rates = SummaryRates(
         created_at=datetime.utcnow(),
         cash=cash_rates,
         forex=forex_rates,
         p2p=p2p_rates,
+        bloomberg=bloomberg_rates,
     )
     await storage.save_rates(summary_rates)
 

@@ -29,6 +29,9 @@ async def get_cash_rates() -> RatesRub:
                 response = await client.get(
                     QUOTES_ENDPOINT.format(currency),
                     timeout=app_settings.http_timeout,
+                    headers={
+                        b'User-Agent': app_settings.http_user_agent,
+                    },
                 )
                 response.raise_for_status()
             except httpx.HTTPError as fetch_exc:

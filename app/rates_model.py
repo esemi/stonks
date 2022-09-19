@@ -22,3 +22,4 @@ class SummaryRates:
     cash: RatesRub
     forex: RatesRub
     p2p: RatesRub
+    bloomberg: RatesRub

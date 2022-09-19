@@ -30,6 +30,9 @@ async def get_forex_rates() -> RatesRub:
                         'To': 'RUB',
                         'random_hash': uuid.uuid4().hex,
                     },
+                    headers={
+                        b'User-Agent': app_settings.http_user_agent,
+                    },
                     timeout=app_settings.http_timeout,
                 )
                 response.raise_for_status()

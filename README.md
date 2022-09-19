@@ -59,5 +59,6 @@ python -m app.bot_app
 ### Links
 - [production logs](http://stonks.esemi.ru/)
 - [Stonks & Gents telegram bot](https://t.me/stonks_and_gents_bot)
-- [Forex rates provider](https://exchangerate.host/)
-- [Cash rates provider](https://blagodatka.ru/)
+- [Forex rates](https://exchangerate.host/)
+- [Cash rates](https://blagodatka.ru/)
+- [Bloomberg rates](https://www.bloomberg.com)
