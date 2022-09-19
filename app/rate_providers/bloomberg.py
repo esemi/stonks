@@ -1,4 +1,4 @@
-"""Cash exchange point rates scrapper."""
+"""Bloomberg exchange rates scrapper."""
 
 from decimal import Decimal
 
@@ -8,26 +8,22 @@ from lxml import etree
 from app.rates_model import RatesRub
 from app.settings import app_settings
 
-QUOTES_ENDPOINT = 'https://blagodatka.ru/detailed/{0}'
+QUOTES_ENDPOINT = 'https://www.bloomberg.com/quote/{0}RUB:CUR'
 
 
-async def get_cash_rates() -> RatesRub:
+async def get_rates() -> RatesRub:
     """
-    Return cash currency exchange rates.
+    Return bloomberg rates.
 
     Raises:
         RuntimeError: For network or parsing errors.
     """
-    currency_factor = {
-        # code: exchange factor
-        'czk': 10,
-    }
     rates = {}
     async with httpx.AsyncClient() as client:
         for currency in app_settings.supported_currencies:
             try:  # noqa: WPS229
                 response = await client.get(
-                    QUOTES_ENDPOINT.format(currency),
+                    url=QUOTES_ENDPOINT.format(currency.upper()),
                     timeout=app_settings.http_timeout,
                     headers={
                         b'User-Agent': app_settings.http_user_agent,
@@ -38,24 +34,19 @@ async def get_cash_rates() -> RatesRub:
                 raise RuntimeError('network error') from fetch_exc
 
             try:
-                rate = _parse_ligovka_rate(response.text)
+                rates[currency] = _parse_bloomberg_rate(response.text)
             except RuntimeError as parsing_exc:
                 raise RuntimeError('parsing error') from parsing_exc
-
-            rates[currency] = rate / Decimal(currency_factor.get(currency, 1))
 
     return RatesRub(**rates)
 
 
-def _parse_ligovka_rate(html_source: str) -> Decimal:
+def _parse_bloomberg_rate(html_source: str) -> Decimal:
     try:
-        html_rate = etree.HTML(html_source).cssselect('.table_course tr')[2]
+        html_rate = etree.HTML(html_source).cssselect(
+            '.quotePageSnapshot div.pseudoMainContent section section div span',
+        )[0]
     except (AttributeError, IndexError):
         raise RuntimeError('rates not found')
 
-    try:
-        buy_rate, sell_rate = html_rate.cssselect('.money_price')
-    except ValueError:
-        raise RuntimeError('rates corrupted')
-
-    return (Decimal(sell_rate.text) + Decimal(buy_rate.text)) / Decimal(2)
+    return Decimal(html_rate.text)

@@ -1,7 +1,6 @@
 """Methods for access the database."""
 from dataclasses import asdict
 from datetime import datetime
-from decimal import Decimal
 
 import aioredis
 
@@ -32,22 +31,10 @@ async def get_rates() -> SummaryRates:
     created_at = await db_pool.get(RATES_UPDATE_DATE_KEY)
     return SummaryRates(
         created_at=datetime.fromisoformat(created_at),
-        cash=RatesRub(**{
-            currency: Decimal(rate)
-            for currency, rate in cash_rates.items()
-        }),
-        forex=RatesRub(**{
-            currency: Decimal(rate)
-            for currency, rate in forex_rates.items()
-        }),
-        p2p=RatesRub(**{
-            currency: Decimal(rate)
-            for currency, rate in p2p_rates.items()
-        }),
-        bloomberg=RatesRub(**{
-            currency: Decimal(rate)
-            for currency, rate in bloomberg_rates.items()
-        }),
+        cash=RatesRub.from_dict(cash_rates),
+        forex=RatesRub.from_dict(forex_rates),
+        p2p=RatesRub.from_dict(p2p_rates),
+        bloomberg=RatesRub.from_dict(bloomberg_rates),
     )
 
 
