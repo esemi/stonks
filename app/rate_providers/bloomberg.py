@@ -26,6 +26,8 @@ async def get_rates() -> RatesRub:
                     url=QUOTES_ENDPOINT.format(currency.upper()),
                     timeout=app_settings.http_timeout,
                     headers={
+                        # b'Accept': b'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
+                        # b'Accept-Encoding': b'gzip, deflate, br',
                         b'User-Agent': app_settings.http_user_agent,
                     },
                 )
