@@ -12,5 +12,6 @@ ignore =
     S410,    # Using etree to parse untrusted XML data is known to be vulnerable to XML attacks.
 
 per-file-ignores =
-    #  WPS432:  Found magic number
-    app/settings.py: WPS432
+    #  WPS432: Found magic number
+    #  E501:   line too long
+    app/settings.py: WPS432, E501,

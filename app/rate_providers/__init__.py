@@ -1,1 +1,1 @@
-"""Exchange rates proviudes."""
+"""Exchange rates providers."""

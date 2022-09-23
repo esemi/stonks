@@ -1,9 +1,8 @@
-import httpx
 import pytest
-import respx
+import requests
 
-from app.rates_model import RatesRub
 from app.rate_providers.bloomberg import get_rates
+from app.rates_model import RatesRub
 
 
 async def test_get_bloomberg_rates_contract():
@@ -11,13 +10,12 @@ async def test_get_bloomberg_rates_contract():
 
     assert isinstance(res, RatesRub)
     assert res.czk < 10
-    assert res.usd
-    assert res.eur
+    assert res.usd > 1
+    assert res.eur > 1
 
 
-@respx.mock(assert_all_mocked=False)
-async def test_get_bloomberg_rates_network_error(respx_mock):
-    respx_mock.get("https://www.bloomberg.com/quote/CZKRUB:CUR").mock(return_value=httpx.Response(502))
+async def test_get_bloomberg_rates_network_error(mocker):
+    mocker.patch('activesoup.Driver.get', side_effect=requests.RequestException(502))
 
     with pytest.raises(RuntimeError, match='network error'):
         await get_rates()
