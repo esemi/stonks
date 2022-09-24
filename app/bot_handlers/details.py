@@ -57,8 +57,10 @@ def _fill_currency_table(table: PrettyTable, actual_rates: SummaryRates, currenc
 
 
 def _format_rate_with_diff(rate: Decimal, base_rate: Decimal) -> str:
-    diff = (rate - base_rate) / base_rate * 100
-    return '{0:.4f} ({1}{2:.1f}%)'.format(
+    diff = (rate - base_rate) / base_rate * Decimal(100)
+    if diff < Decimal('0.1'):
+        diff = Decimal(0)
+    return '{0:.4f} {1}{2:.1f}%'.format(
         rate,
         _return_number_sign(diff),
         abs(diff),
@@ -66,4 +68,6 @@ def _format_rate_with_diff(rate: Decimal, base_rate: Decimal) -> str:
 
 
 def _return_number_sign(amount: Decimal) -> str:
+    if not amount:
+        return ''
     return '+' if amount >= 0 else '-'
