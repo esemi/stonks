@@ -1,5 +1,7 @@
 """Data models."""
 
+from __future__ import annotations
+
 from dataclasses import dataclass
 from datetime import datetime
 from decimal import Decimal
@@ -13,6 +15,14 @@ class RatesRub:
     eur: Decimal
     usd: Decimal
 
+    @classmethod
+    def from_dict(cls, rates_source: dict[str, str]) -> RatesRub:
+        """Make RatesRub from dict."""
+        return cls(**{
+            currency: Decimal(rate)
+            for currency, rate in rates_source.items()
+        })
+
 
 @dataclass
 class SummaryRates:
@@ -22,3 +32,4 @@ class SummaryRates:
     cash: RatesRub
     forex: RatesRub
     p2p: RatesRub
+    bloomberg: RatesRub

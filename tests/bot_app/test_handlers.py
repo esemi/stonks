@@ -1,5 +1,7 @@
 from unittest.mock import AsyncMock
-from app.bot_app import welcome_handler, current_rates_handler, rate_details_handler
+from app.bot_handlers.details import rate_details_handler
+from app.bot_handlers.stonks import current_rates_handler
+from app.bot_handlers.welcome import welcome_handler
 
 
 async def test_welcome_handler():

@@ -2,7 +2,7 @@ from decimal import Decimal
 
 import pytest
 
-from app.cash_rates import _parse_ligovka_rate
+from app.rate_providers.cash import _parse_ligovka_rate
 
 
 async def test_parse_ligovka_rate_happy_path():

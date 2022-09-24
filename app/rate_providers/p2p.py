@@ -5,7 +5,7 @@ from app.rates_model import RatesRub
 from app.settings import app_settings
 
 
-def get_p2p_rates(cash_rates: RatesRub, forex_rates: RatesRub) -> RatesRub:
+def get_rates(cash_rates: RatesRub, forex_rates: RatesRub) -> RatesRub:
     """Return p2p currency exchange rates."""
     rates: dict[str, Decimal] = {}
     for currency in app_settings.supported_currencies:
