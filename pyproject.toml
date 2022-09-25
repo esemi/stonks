@@ -16,7 +16,6 @@ uvloop = "^0.16.0"
 ujson = "^5.3.0"
 aiohttp = {extras = ["speedups"], version = "^3.8.1"}
 prettytable = "^3.3.0"
-activesoup = "^0.3.2"
 
 [tool.poetry.dev-dependencies]
 mypy = "^0.950"

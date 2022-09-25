@@ -22,11 +22,6 @@ async def test_save_rates_happy_path():
             eur=Decimal('65'),
             usd=Decimal('73'),
         ),
-        bloomberg_rates=RatesRub(
-            czk=Decimal('2.78'),
-            eur=Decimal('60.789'),
-            usd=Decimal('67.777779'),
-        ),
     )
 
     assert (await storage.get_rates()) is not None
