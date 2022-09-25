@@ -24,7 +24,7 @@ async def get_rates() -> RatesRub:
     }
     rates = {}
     async with httpx.AsyncClient() as client:
-        for currency in app_settings.supported_currencies:
+        for currency in app_settings.supported_foreign_currencies:
             try:  # noqa: WPS229
                 response = await client.get(
                     QUOTES_ENDPOINT.format(currency),

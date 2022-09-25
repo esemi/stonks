@@ -3,6 +3,7 @@ import logging
 
 from aiogram import Bot, Dispatcher, executor
 
+from app.bot_handlers.convert import convert_currency_handler
 from app.bot_handlers.details import rate_details_handler
 from app.bot_handlers.stonks import current_rates_handler
 from app.bot_handlers.welcome import welcome_handler
@@ -20,6 +21,7 @@ def main() -> None:
     router.register_message_handler(welcome_handler, commands=['help', 'start'])
     router.register_message_handler(current_rates_handler, commands=['stonks'])
     router.register_message_handler(rate_details_handler, commands=['details'])
+    router.register_message_handler(convert_currency_handler, commands=['convert'])
     executor.start_polling(router, skip_updates=True)
 
 

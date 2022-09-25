@@ -17,7 +17,7 @@ async def current_rates_handler(message: types.Message) -> None:
     table = PrettyTable()
     table.field_names = ['', 'Stonks', 'Gents']
     table.align = 'r'
-    for code in app_settings.supported_currencies:
+    for code in app_settings.supported_foreign_currencies:
         table.add_row([
             code.upper(),
             '{0:.2f}'.format(getattr(actual_rates.forex, code)),
