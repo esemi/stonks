@@ -5,6 +5,8 @@ from typing import List
 
 from pydantic import BaseSettings, Field, RedisDsn
 
+from app import currency
+
 
 class AppSettings(BaseSettings):
     """Application settings class."""
@@ -19,7 +21,30 @@ class AppSettings(BaseSettings):
     p2p_rate_discount: Decimal = Field(Decimal('0.15'), description='P2P rate discount from cash rates in ruble cents')
     debug: bool = Field(default=False)
     telegram_token: str
-    supported_currencies: List[str] = ['czk', 'eur', 'usd']
+    supported_foreign_currencies: List[str] = [currency.CZK, currency.EUR, currency.USD]
+    currency_aliases: dict[str, str] = {
+        'czk': currency.CZK,
+        'крон': currency.CZK,
+        'kč': currency.CZK,
+
+        'usd': currency.USD,
+        'баксов': currency.USD,
+        'бакса': currency.USD,
+        'бакс': currency.USD,
+        '$': currency.USD,
+
+        'eur': currency.EUR,
+        'евро': currency.EUR,
+        'евров': currency.EUR,
+        '€': currency.EUR,
+
+        'rub': currency.RUB,
+        'rur': currency.RUB,
+        'рублей': currency.RUB,
+        'рубля': currency.RUB,
+        'руб': currency.RUB,
+        'р': currency.RUB,
+    }
 
 
 app_settings = AppSettings(

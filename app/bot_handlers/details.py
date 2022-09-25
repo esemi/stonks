@@ -26,7 +26,7 @@ async def rate_details_handler(message: types.Message) -> None:
 
 def _prepare_details_table(actual_rates: SummaryRates) -> str:
     message_content: list[str] = []
-    for code in app_settings.supported_currencies:
+    for code in app_settings.supported_foreign_currencies:
         table = PrettyTable(
             field_names=[code.upper(), ''],
             align='l',
