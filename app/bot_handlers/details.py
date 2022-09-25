@@ -43,13 +43,11 @@ def _prepare_details_table(actual_rates: SummaryRates) -> str:
 
 def _fill_currency_table(table: PrettyTable, actual_rates: SummaryRates, currency_code: str) -> None:
     forex_rate = getattr(actual_rates.forex, currency_code)
-    bloomberg_rate = getattr(actual_rates.bloomberg, currency_code)
     cash_rate = getattr(actual_rates.cash, currency_code)
     p2p_rate = getattr(actual_rates.p2p, currency_code)
     avg_rate = (cash_rate + forex_rate) / 2
 
     table.add_row(['Forex', '{0:.4f}'.format(forex_rate)])
-    table.add_row(['Bloom', _format_rate_with_diff(bloomberg_rate, forex_rate)])
     table.add_row(['Cash', _format_rate_with_diff(cash_rate, forex_rate)])
     table.add_row(['Avg', _format_rate_with_diff(avg_rate, forex_rate)])
     if currency_code != 'czk':
