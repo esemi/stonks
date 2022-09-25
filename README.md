@@ -61,4 +61,3 @@ python -m app.bot_app
 - [Stonks & Gents telegram bot](https://t.me/stonks_and_gents_bot)
 - [Forex rates](https://exchangerate.host/)
 - [Cash rates](https://blagodatka.ru/)
-- [Bloomberg rates](https://www.bloomberg.com)

@@ -17,7 +17,7 @@ def main() -> None:
     )
 
     router = Dispatcher(bot)
-    router.register_message_handler(welcome_handler, commands=['help'])
+    router.register_message_handler(welcome_handler, commands=['help', 'start'])
     router.register_message_handler(current_rates_handler, commands=['stonks'])
     router.register_message_handler(rate_details_handler, commands=['details'])
     executor.start_polling(router, skip_updates=True)
