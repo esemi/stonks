@@ -57,6 +57,7 @@ def test_parse_convert_request_valid_request(
     '0 BTC',
     '15000',
     'eur',
+    None,
 ])
 def test_parse_convert_request_invalid_request(message_text: str):
     result = _parse_convert_request(message_text)
