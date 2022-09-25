@@ -9,7 +9,7 @@ from decimal import Decimal
 
 @dataclass
 class RatesRub:
-    """Currency rates model."""
+    """Provider rates."""
 
     czk: Decimal
     eur: Decimal
@@ -25,10 +25,29 @@ class RatesRub:
 
 
 @dataclass
+class CurrencyRates:
+    """Currency rates."""
+    cash: Decimal
+    forex: Decimal
+    p2p: Decimal
+
+    @property
+    def avg(self) -> Decimal:
+        return (self.cash + self.forex) / Decimal(2)
+
+
+@dataclass
 class SummaryRates:
-    """Summary rates from few sources."""
+    """Summary rates by provider."""
 
     created_at: datetime
     cash: RatesRub
     forex: RatesRub
     p2p: RatesRub
+
+    def get_rates(self, currency_code: str) -> CurrencyRates:
+        return CurrencyRates(
+            cash=getattr(self.cash, currency_code),
+            forex=getattr(self.forex, currency_code),
+            p2p=getattr(self.p2p, currency_code),
+        )
