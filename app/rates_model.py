@@ -28,6 +28,7 @@ class RatesRub:
 class CurrencyRates:
     """Currency rates."""
 
+    currency: str
     cash: Decimal
     forex: Decimal
     p2p: Decimal
@@ -50,6 +51,7 @@ class SummaryRates:
     def get_rates(self, currency_code: str) -> CurrencyRates:
         """Get rates for selected currency."""
         return CurrencyRates(
+            currency=currency_code,
             cash=getattr(self.cash, currency_code),
             forex=getattr(self.forex, currency_code),
             p2p=getattr(self.p2p, currency_code),

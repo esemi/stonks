@@ -10,7 +10,7 @@ from prettytable import PrettyTable
 
 from app import currency, storage
 from app.bot_handlers.common import log_request
-from app.rates_model import SummaryRates
+from app.rates_model import CurrencyRates, SummaryRates
 from app.settings import app_settings
 
 
@@ -33,7 +33,7 @@ async def convert_currency_handler(message: types.Message) -> None:
             '<pre>/convert 3000 eur</pre>',
         ))
         await message.reply(
-            reply,
+            text=reply,
             parse_mode='HTML',
             disable_web_page_preview=True,
         )
@@ -80,23 +80,31 @@ def _parse_convert_request(convert_message: Optional[str]) -> Optional[ConvertRe
 
 def _prepare_conversion_table(actual_rates: SummaryRates, convert_request: ConvertRequest) -> str:
     if convert_request.currency == currency.RUB:
-        # todo impl
-        return 'not implemented'
+        message_content: list[str] = []
+        for currency_code in app_settings.supported_foreign_currencies:
+            conversion_table = _get_conversion_table_from_rub(
+                convert_request,
+                actual_rates.get_rates(currency_code),
+            )
+            message_content.append(conversion_table.get_string(border=False))
+        response = '\n\n'.join(message_content)
 
-    conversion_table = _get_conversion_single_currency(
-        convert_request,
-        actual_rates,
-    )
-    return conversion_table.get_string(border=False)
+    else:
+        conversion_table = _get_conversion_table_to_rub(
+            convert_request,
+            currency_rates=actual_rates.get_rates(convert_request.currency),
+        )
+        response = conversion_table.get_string(border=False)
+
+    return response
 
 
-def _get_conversion_single_currency(convert_request: ConvertRequest, actual_rates: SummaryRates) -> PrettyTable:
+def _get_conversion_table_to_rub(convert_request: ConvertRequest, currency_rates: CurrencyRates) -> PrettyTable:
     rub_number_format = '{0:,}'
     table = PrettyTable(
-        field_names=[convert_request.currency.upper(), currency.RUB.upper()],
+        field_names=[currency.RUB.upper(), ''],
         align='l',
     )
-    currency_rates = actual_rates.get_rates(convert_request.currency)
     table.add_row(['Forex', rub_number_format.format(
         round(convert_request.amount * currency_rates.forex),
     )])
@@ -110,6 +118,30 @@ def _get_conversion_single_currency(convert_request: ConvertRequest, actual_rate
     if convert_request.currency != currency.CZK:
         table.add_row(['p2p', rub_number_format.format(
             round(convert_request.amount * currency_rates.p2p),
+        )])
+
+    return table
+
+
+def _get_conversion_table_from_rub(convert_request: ConvertRequest, currency_rates: CurrencyRates) -> PrettyTable:
+    foreign_currency_number_format = '{0:,}'
+    table = PrettyTable(
+        field_names=[currency_rates.currency.upper(), ''],
+        align='l',
+    )
+    table.add_row(['Forex', foreign_currency_number_format.format(
+        round(convert_request.amount / currency_rates.forex),
+    )])
+    table.add_row(['Cash', foreign_currency_number_format.format(
+        round(convert_request.amount / currency_rates.cash),
+    )])
+    table.add_row(['Avg', foreign_currency_number_format.format(
+        round(convert_request.amount / currency_rates.avg),
+    )])
+
+    if currency_rates.currency != currency.CZK:
+        table.add_row(['p2p', foreign_currency_number_format.format(
+            round(convert_request.amount / currency_rates.p2p),
         )])
 
     return table

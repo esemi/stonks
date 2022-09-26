@@ -1,5 +1,5 @@
 from decimal import Decimal
-from unittest.mock import AsyncMock
+from unittest.mock import AsyncMock, Mock
 
 import pytest
 
@@ -7,23 +7,36 @@ from app.bot_handlers.convert import convert_currency_handler, _parse_convert_re
 
 
 async def test_convert_currency_handler_invalid_request():
-    message_mock = AsyncMock(text='invalid convert request')
+    message_mock = AsyncMock()
+    message_mock.get_args = Mock(return_value='invalid convert request')
     expected_message = 'I dont understand'
 
     await convert_currency_handler(message=message_mock)
 
     assert message_mock.reply.call_count == 1
-    assert expected_message in message_mock.reply.call_args.args[0]
+    assert expected_message in message_mock.reply.call_args.kwargs['text']
 
 
-async def test_convert_currency_handler_happy_path():
-    message_mock = AsyncMock(text='15000 czk')
-    expected_message = 'Conversion result'
+async def test_convert_currency_handler_to_rub(fixture_filled_rates):
+    message_mock = AsyncMock()
+    message_mock.get_args = Mock(return_value='15000 czk')
 
     await convert_currency_handler(message=message_mock)
 
     assert message_mock.reply.call_count == 1
-    assert expected_message in message_mock.reply.call_args.args[0]
+    assert 'RUB' in message_mock.reply.call_args.kwargs['text']
+
+
+async def test_convert_currency_handler_from_rub(fixture_filled_rates):
+    message_mock = AsyncMock()
+    message_mock.get_args = Mock(return_value='15000 руб')
+
+    await convert_currency_handler(message=message_mock)
+
+    assert message_mock.reply.call_count == 1
+    assert 'CZK' in message_mock.reply.call_args.kwargs['text']
+    assert 'EUR' in message_mock.reply.call_args.kwargs['text']
+    assert 'USD' in message_mock.reply.call_args.kwargs['text']
 
 
 @pytest.mark.parametrize('message_text, expected_amount, expected_currency', [
