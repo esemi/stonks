@@ -5,7 +5,7 @@ from decimal import Decimal
 from aiogram import types
 from prettytable import PrettyTable
 
-from app import storage
+from app import currency, storage
 from app.bot_handlers.common import log_request
 from app.rates_model import SummaryRates
 from app.settings import app_settings
@@ -47,7 +47,7 @@ def _fill_currency_table(table: PrettyTable, actual_rates: SummaryRates, currenc
     table.add_row(['Forex', '{0:.4f}'.format(currency_rates.forex)])
     table.add_row(['Cash', _format_rate_with_diff(currency_rates.cash, currency_rates.forex)])
     table.add_row(['Avg', _format_rate_with_diff(currency_rates.avg, currency_rates.forex)])
-    if currency_code != 'czk':
+    if currency_code != currency.CZK:
         table.add_row(['p2p', _format_rate_with_diff(currency_rates.p2p, currency_rates.forex)])
 
 

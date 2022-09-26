@@ -8,7 +8,7 @@ from typing import Optional
 from aiogram import types
 from prettytable import PrettyTable
 
-from app import storage, currency
+from app import currency, storage
 from app.bot_handlers.common import log_request
 from app.rates_model import SummaryRates
 from app.settings import app_settings
@@ -48,9 +48,6 @@ async def convert_currency_handler(message: types.Message) -> None:
     )
 
 
-#     todo impl converter
-
-
 @dataclasses.dataclass
 class ConvertRequest:
     """Request for currency conversion."""
@@ -62,7 +59,9 @@ class ConvertRequest:
 def _parse_convert_request(convert_message: Optional[str]) -> Optional[ConvertRequest]:
     if not convert_message:
         return None
-    match_result = re.match(r'([\d.]+)([\s\w$€]+)', convert_message.strip().lower(), re.UNICODE)
+
+    msg = str(convert_message).strip().lower()
+    match_result = re.match(r'([\d.]+)([\s\w$€]+)', msg, re.UNICODE)
     if not match_result:
         return None
 
@@ -80,27 +79,37 @@ def _parse_convert_request(convert_message: Optional[str]) -> Optional[ConvertRe
 
 
 def _prepare_conversion_table(actual_rates: SummaryRates, convert_request: ConvertRequest) -> str:
-    message_content: list[str] = []
     if convert_request.currency == currency.RUB:
         # todo impl
-        ...
+        return 'not implemented'
 
-    else:
-        message_content.append('{0} -> RUB'.format(convert_request.currency.upper()))
-        conversion_table = _get_conversion_table(convert_request, actual_rates)
-        message_content.append(conversion_table)
+    conversion_table = _get_conversion_single_currency(
+        convert_request,
+        actual_rates,
+    )
+    return conversion_table.get_string(border=False)
 
-    return '\n\n'.join(message_content)
 
+def _get_conversion_single_currency(convert_request: ConvertRequest, actual_rates: SummaryRates) -> PrettyTable:
+    rub_number_format = '{0:,}'
+    table = PrettyTable(
+        field_names=[convert_request.currency.upper(), currency.RUB.upper()],
+        align='l',
+    )
+    currency_rates = actual_rates.get_rates(convert_request.currency)
+    table.add_row(['Forex', rub_number_format.format(
+        round(convert_request.amount * currency_rates.forex),
+    )])
+    table.add_row(['Cash', rub_number_format.format(
+        round(convert_request.amount * currency_rates.cash),
+    )])
+    table.add_row(['Avg', rub_number_format.format(
+        round(convert_request.amount * currency_rates.avg),
+    )])
 
-def _get_conversion_table(convert_request: ConvertRequest, actual_rates: SummaryRates) -> str:
-    forex_rate = getattr(actual_rates.forex, convert_request.currency)
-    cash_rate = getattr(actual_rates.cash, convert_request.currency)
-    p2p_rate = getattr(actual_rates.p2p, convert_request.currency)
-    avg_rate = (cash_rate + forex_rate) / 2
+    if convert_request.currency != currency.CZK:
+        table.add_row(['p2p', rub_number_format.format(
+            round(convert_request.amount * currency_rates.p2p),
+        )])
 
-    table.add_row(['Forex', '{0:.4f}'.format(forex_rate)])
-    table.add_row(['Cash', _format_rate_with_diff(cash_rate, forex_rate)])
-    table.add_row(['Avg', _format_rate_with_diff(avg_rate, forex_rate)])
-    if currency_code != 'czk':
-        table.add_row(['p2p', _format_rate_with_diff(p2p_rate, forex_rate)])
+    return table

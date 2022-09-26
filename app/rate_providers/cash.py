@@ -5,6 +5,7 @@ from decimal import Decimal
 import httpx
 from lxml import etree
 
+from app import currency
 from app.rates_model import RatesRub
 from app.settings import app_settings
 
@@ -20,14 +21,14 @@ async def get_rates() -> RatesRub:
     """
     currency_factor = {
         # code: exchange factor
-        'czk': 10,
+        currency.CZK: 10,
     }
     rates = {}
     async with httpx.AsyncClient() as client:
-        for currency in app_settings.supported_foreign_currencies:
+        for currency_code in app_settings.supported_foreign_currencies:
             try:  # noqa: WPS229
                 response = await client.get(
-                    QUOTES_ENDPOINT.format(currency),
+                    QUOTES_ENDPOINT.format(currency_code),
                     timeout=app_settings.http_timeout,
                     headers={
                         b'User-Agent': app_settings.http_user_agent,
@@ -42,7 +43,7 @@ async def get_rates() -> RatesRub:
             except RuntimeError as parsing_exc:
                 raise RuntimeError('parsing error') from parsing_exc
 
-            rates[currency] = rate / Decimal(currency_factor.get(currency, 1))
+            rates[currency_code] = rate / Decimal(currency_factor.get(currency_code, 1))
 
     return RatesRub(**rates)
 

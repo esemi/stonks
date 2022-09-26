@@ -27,12 +27,14 @@ class RatesRub:
 @dataclass
 class CurrencyRates:
     """Currency rates."""
+
     cash: Decimal
     forex: Decimal
     p2p: Decimal
 
     @property
     def avg(self) -> Decimal:
+        """Average rate between FX and cash."""
         return (self.cash + self.forex) / Decimal(2)
 
 
@@ -46,6 +48,7 @@ class SummaryRates:
     p2p: RatesRub
 
     def get_rates(self, currency_code: str) -> CurrencyRates:
+        """Get rates for selected currency."""
         return CurrencyRates(
             cash=getattr(self.cash, currency_code),
             forex=getattr(self.forex, currency_code),
