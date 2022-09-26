@@ -11,10 +11,10 @@ from app import currency
 class AppSettings(BaseSettings):
     """Application settings class."""
 
-    redis_dsn: RedisDsn = Field('redis://localhost:6379/2')
-    http_timeout: int = Field(35, description='rates-API request timeout')
+    redis_dsn: RedisDsn = Field('redis://localhost:6379/3')
+    http_timeout: int = Field(45, description='rates-API request timeout')
     http_user_agent: bytes = Field(
-        default=b'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.75 Safari/536.36"',
+        default=b'Mozilla/5.0 (X11; x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.75 Safari/536.36"',
     )
     throttling_time: float = Field(60.0 * 20, description='Seconds between update rate tries in seconds')
     throttling_min_time: float = 10.0
