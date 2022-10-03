@@ -1,4 +1,4 @@
-"""Forex exchange point rates scrapper."""
+"""Forex rates scrapper."""
 import uuid
 from decimal import Decimal
 
