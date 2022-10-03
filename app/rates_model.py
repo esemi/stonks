@@ -32,6 +32,7 @@ class CurrencyRates:
     cash: Decimal
     forex: Decimal
     p2p: Decimal
+    moex: Decimal
 
     @property
     def avg(self) -> Decimal:
@@ -47,6 +48,7 @@ class SummaryRates:
     cash: RatesRub
     forex: RatesRub
     p2p: RatesRub
+    moex: RatesRub
 
     def get_rates(self, currency_code: str) -> CurrencyRates:
         """Get rates for selected currency."""
@@ -55,4 +57,5 @@ class SummaryRates:
             cash=getattr(self.cash, currency_code),
             forex=getattr(self.forex, currency_code),
             p2p=getattr(self.p2p, currency_code),
+            moex=getattr(self.moex, currency_code),
         )

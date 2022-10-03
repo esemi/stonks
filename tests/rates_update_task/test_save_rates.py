@@ -22,6 +22,11 @@ async def test_save_rates_happy_path():
             eur=Decimal('65'),
             usd=Decimal('73'),
         ),
+        moex_rates=RatesRub(
+            czk=Decimal('0'),
+            eur=Decimal('54.0045'),
+            usd=Decimal('59.0714'),
+        ),
     )
 
     assert (await storage.get_rates()) is not None

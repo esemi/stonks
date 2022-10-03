@@ -23,6 +23,11 @@ async def test_save_rates_happy_path():
             eur=Decimal('64'),
             usd=Decimal('73'),
         ),
+        moex=RatesRub(
+            czk=Decimal('0'),
+            eur=Decimal('54.789'),
+            usd=Decimal('59.777779'),
+        ),
     )
 
     res = await save_rates(payload)
@@ -33,3 +38,4 @@ async def test_save_rates_happy_path():
     assert saved_rates.cash.eur == Decimal('65.1')
     assert saved_rates.forex.usd == Decimal('67.777779')
     assert saved_rates.p2p.usd == Decimal('73')
+    assert saved_rates.moex.usd == Decimal('59.777779')
