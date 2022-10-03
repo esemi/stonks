@@ -107,6 +107,11 @@ def _get_conversion_table_to_rub(convert_request: ConvertRequest, currency_rates
     table.add_row(['Forex', format_amount(
         round(convert_request.amount * currency_rates.forex),
     )])
+    if convert_request.currency != currency.CZK:
+        table.add_row(['Moex', format_amount(
+            round(convert_request.amount * currency_rates.moex),
+        )])
+
     table.add_row(['Cash', format_amount(
         round(convert_request.amount * currency_rates.cash),
     )])
@@ -130,6 +135,11 @@ def _get_conversion_table_from_rub(convert_request: ConvertRequest, currency_rat
     table.add_row(['Forex', format_amount(
         round(convert_request.amount / currency_rates.forex),
     )])
+    if currency_rates.currency != currency.CZK:
+        table.add_row(['Moex', format_amount(
+            round(convert_request.amount / currency_rates.moex),
+        )])
+
     table.add_row(['Cash', format_amount(
         round(convert_request.amount / currency_rates.cash),
     )])
