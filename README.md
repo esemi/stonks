@@ -60,5 +60,5 @@ python -m app.bot_app
 - [Stonks & Gents telegram bot](https://t.me/stonks_and_gents_bot)
 - [Forex rates](https://www.xe.com/)
 - [Cash rates](https://blagodatka.ru/)
-- [Moex rates](https://www.finam.ru/)
+- [Moex rates](https://news.mail.ru/currency/src/MOEX/charcode/EUR/)
 - [production logs](http://stonks.esemi.ru/)
