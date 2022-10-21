@@ -15,9 +15,17 @@ async def test_get_moex_rates_contract():
     assert res.eur > 10
 
 
-@respx.mock(base_url="https://www.finam.ru/quote/mosbirzha-valyutnyj-rynok", assert_all_mocked=False)
+@respx.mock(base_url="https://news.mail.ru/rate/ext/rate_initial/RUB/", assert_all_mocked=False)
 async def test_get_moex_rates_network_error(respx_mock):
-    respx_mock.get('/eurrubtom-eur-rub/').mock(return_value=httpx.Response(502))
+    respx_mock.get('').mock(return_value=httpx.Response(403))
 
     with pytest.raises(RuntimeError, match='network error'):
+        await get_rates()
+
+
+@respx.mock(base_url="https://news.mail.ru/rate/ext/rate_initial/RUB/", assert_all_mocked=False)
+async def test_get_moex_rates_invalid_content(respx_mock):
+    respx_mock.get('').mock(return_value=httpx.Response(200, content='sdsd sd sd sds'))
+
+    with pytest.raises(RuntimeError, match='parsing error'):
         await get_rates()
