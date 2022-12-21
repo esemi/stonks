@@ -39,7 +39,7 @@ async def test_parse_ligovka_rate_happy_path():
 
     res = _parse_ligovka_rate(valid_html)
 
-    assert res == (Decimal('78.55') + Decimal('75.58')) / Decimal(2)
+    assert res == (Decimal('73.045') + Decimal('71.50')) / Decimal(2)
 
 
 async def test_parse_ligovka_rate_czk():
@@ -55,12 +55,6 @@ async def test_parse_ligovka_rate_czk():
                         <td class="money_icon"><img src="/images/icons/ic-money1.png" alt="" width="22" height="8"></td>
                         <td class="money_price buy_price">27.00</td>
                         <td class="money_price">33.00</td>
-                    </tr>
-                                    <tr>
-                        <td class="money_quantity">от 10000</td>
-                        <td class="money_icon"><img src="/images/icons/ic-money10000.png" alt="" width="22" height="8"></td>
-                        <td class="money_price buy_price">27.50</td>
-                        <td class="money_price">32.50</td>
                     </tr>
                                 </tbody></table>"""
 
@@ -82,12 +76,6 @@ async def test_parse_ligovka_rate_corrupted_html():
                     <td class="money_quantity">от 1</td>
                     <td class="money_icon"><img src="/images/icons/ic-money1.png" alt="" width="22" height="8"></td>
                     <td class="money_price buy_price">73.045</td>
-                    <td class="money_price">71.50</td>
-                </tr>
-                                <tr>
-                    <td class="money_quantity">от 1000</td>
-                    <td class="money_icon"><img src="/images/icons/ic-money1000.png" alt="" width="22" height="8"></td>
-                    <td class="money_price buy_price">75.58</td>
                 </tr>
                                 <tr>
                     <td class="money_quantity">от 10000</td>

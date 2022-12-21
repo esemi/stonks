@@ -50,7 +50,9 @@ async def get_rates() -> RatesRub:
 def _parse_xe_rate(html_source: str) -> Decimal:
     stringify = etree.XPath('string()')
     try:
-        html_rate = stringify(etree.HTML(html_source).xpath('//main/form//p')[1])
+        html_rate = stringify(
+            etree.HTML(html_source).xpath('//main//p[contains(@class, "result__BigRate")]')[0],
+        )
 
     except (AttributeError, IndexError):
         raise RuntimeError('rates not found')

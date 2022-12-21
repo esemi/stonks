@@ -50,7 +50,7 @@ async def get_rates() -> RatesRub:
 
 def _parse_ligovka_rate(html_source: str) -> Decimal:
     try:
-        html_rate = etree.HTML(html_source).cssselect('.table_course tr')[2]
+        html_rate = etree.HTML(html_source).cssselect('.table_course tr')[1]
     except (AttributeError, IndexError):
         raise RuntimeError('rates not found')
 
