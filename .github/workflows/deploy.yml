@@ -54,9 +54,9 @@ jobs:
             ./pyproject.toml => $TARGET_DIR
 
           last_ssh: |-
-            $VENV_BIN/pip install --no-cache-dir poetry pip setuptools --upgrade
-            $VENV_BIN/poetry config virtualenvs.create false --local
-            $VENV_BIN/poetry install --no-dev
-            $VENV_BIN/pip cache purge
+            source $VENV_BIN/activate 
+            pip install --no-cache-dir poetry pip setuptools
+            poetry install --only main
+            pip cache purge
             echo 'telegram_token=${{ secrets.TELEGRAM_PROD_TOKEN }}' > .env
             supervisorctl restart stonks:*
