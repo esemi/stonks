@@ -4,6 +4,7 @@ from json import JSONDecodeError
 
 import httpx
 
+from app import currency
 from app.rates_model import RatesRub
 from app.settings import app_settings
 
@@ -40,14 +41,13 @@ async def get_rates() -> RatesRub:
 
 def _parse_news_mail_rate(response: httpx.Response) -> RatesRub:
     rates = {
-        'czk': Decimal(0),
+        currency.CZK: Decimal(0),
     }
+
     try:  # noqa: WPS229
-        rate_rows = response.json()['data']['currency_rates']['MOEX']['rows']
-        for rate in rate_rows:
-            currency_code = rate['code'].lower()
-            if currency_code in app_settings.supported_foreign_currencies:
-                rates[currency_code] = Decimal(rate['rate']['value'])
+        source_rates = response.json()['data']['calculator']['notes']
+        rates[currency.USD] = Decimal(source_rates['USDcbrf'])
+        rates[currency.EUR] = Decimal(source_rates['EURcbrf'])
 
     except (AttributeError, IndexError, JSONDecodeError):
         raise RuntimeError('rates not found')
