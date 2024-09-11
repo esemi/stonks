@@ -9,3 +9,4 @@ async def test_get_forex_rates_happy_path():
     assert res.czk < 10
     assert res.usd
     assert res.eur
+    assert res.cny

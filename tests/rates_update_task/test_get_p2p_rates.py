@@ -9,11 +9,13 @@ def test_get_forex_rates_czk_disabled():
         czk=Decimal('2.65'),
         eur=Decimal(0),
         usd=Decimal(0),
+        cny=Decimal(0),
     )
     forex_rates = RatesRub(
         czk=Decimal('2.4865355'),
         eur=Decimal(0),
         usd=Decimal(0),
+        cny=Decimal(0),
     )
 
     res = get_rates(cash_rates, forex_rates)
@@ -26,17 +28,20 @@ def test_get_forex_rates_discount_applied():
         czk=Decimal(0),
         eur=Decimal('65.65'),
         usd=Decimal('65.64'),
+        cny=Decimal('65.64'),
     )
     forex_rates = RatesRub(
         czk=Decimal(0),
         eur=Decimal(60),
         usd=Decimal(60),
+        cny=Decimal(60),
     )
 
     res = get_rates(cash_rates, forex_rates)
 
     assert res.eur == Decimal('66')
     assert res.usd == Decimal('65')
+    assert res.cny == Decimal('65')
 
 
 def test_get_forex_rates_forex_rate_if_greater_than():
@@ -44,14 +49,17 @@ def test_get_forex_rates_forex_rate_if_greater_than():
         czk=Decimal(0),
         eur=Decimal('65.65'),
         usd=Decimal('65.64'),
+        cny=Decimal('65.63'),
     )
     forex_rates = RatesRub(
         czk=Decimal(0),
         eur=Decimal('65.55'),
         usd=Decimal('65.1'),
+        cny=Decimal('65.01'),
     )
 
     res = get_rates(cash_rates, forex_rates)
 
     assert res.eur == Decimal('66')
     assert res.usd == Decimal('65.1')
+    assert res.cny == Decimal('65.01')

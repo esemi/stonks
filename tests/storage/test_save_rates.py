@@ -12,21 +12,25 @@ async def test_save_rates_happy_path():
             czk=Decimal('3'),
             eur=Decimal('65.1'),
             usd=Decimal('73.8'),
+            cny=Decimal('12.5'),
         ),
         forex=RatesRub(
             czk=Decimal('2.78'),
             eur=Decimal('60.789'),
             usd=Decimal('67.777779'),
+            cny=Decimal('12.5'),
         ),
         p2p=RatesRub(
             czk=Decimal('3'),
             eur=Decimal('64'),
             usd=Decimal('73'),
+            cny=Decimal('12.5'),
         ),
         moex=RatesRub(
             czk=Decimal('0'),
             eur=Decimal('54.789'),
             usd=Decimal('59.777779'),
+            cny=Decimal('12.5'),
         ),
     )
 
@@ -39,3 +43,4 @@ async def test_save_rates_happy_path():
     assert saved_rates.forex.usd == Decimal('67.777779')
     assert saved_rates.p2p.usd == Decimal('73')
     assert saved_rates.moex.usd == Decimal('59.777779')
+    assert saved_rates.moex.cny == Decimal('12.5')

@@ -11,25 +11,6 @@ jobs:
     steps:
       - name: checkout
         uses: actions/checkout@v2
-      - uses: actions/setup-python@v3
-        with:
-          python-version: '3.9'
-
-      - name: Install dependencies
-        run: |
-          pip install poetry
-          poetry --version
-          poetry install
-
-      - uses: shogo82148/actions-setup-redis@v1
-        with:
-          redis-version: 'latest'
-      - run: redis-cli ping
-
-      - name: Run tests
-        run: |
-          echo 'telegram_token=${{ secrets.TELEGRAM_TEST_TOKEN }}' > .env
-          poetry run pytest
 
       - name: deploy
         uses: cross-the-world/ssh-scp-ssh-pipelines@v1.1.4

@@ -14,6 +14,7 @@ class RatesRub:
     czk: Decimal
     eur: Decimal
     usd: Decimal
+    cny: Decimal
 
     @classmethod
     def from_dict(cls, rates_source: dict[str, str]) -> RatesRub:

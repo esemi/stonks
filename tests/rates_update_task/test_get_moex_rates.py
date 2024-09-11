@@ -10,9 +10,10 @@ async def test_get_moex_rates_contract():
     res = await get_rates()
 
     assert isinstance(res, RatesRub)
-    assert res.czk == 0
+    assert res.czk < 10
     assert res.usd > 10
     assert res.eur > 10
+    assert res.cny > 10
 
 
 @respx.mock(base_url="https://news.mail.ru/rate/ext/rate_initial/RUB/", assert_all_mocked=False)

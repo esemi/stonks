@@ -21,7 +21,7 @@ class AppSettings(BaseSettings):
     p2p_rate_discount: Decimal = Field(Decimal('0.15'), description='P2P rate discount from cash rates in ruble cents')
     debug: bool = Field(default=False)
     telegram_token: str
-    supported_foreign_currencies: List[str] = [currency.CZK, currency.EUR, currency.USD]
+    supported_foreign_currencies: List[str] = [currency.CZK, currency.EUR, currency.USD, currency.CNY]
     currency_aliases: dict[str, str] = {
         'czk': currency.CZK,
         'крон': currency.CZK,
@@ -37,6 +37,12 @@ class AppSettings(BaseSettings):
         'евро': currency.EUR,
         'евров': currency.EUR,
         '€': currency.EUR,
+
+        'cny': currency.CNY,
+        'юань': currency.CNY,
+        'юаней': currency.CNY,
+        'жэньминьби': currency.CNY,
+        '¥': currency.CNY,
 
         'rub': currency.RUB,
         'rur': currency.RUB,

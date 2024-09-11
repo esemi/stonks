@@ -13,6 +13,7 @@ async def test_get_cash_rates_contract():
     assert res.czk < 10
     assert res.usd
     assert res.eur
+    assert res.cny
 
 
 @respx.mock(base_url="https://blagodatka.ru/detailed", assert_all_mocked=False)
