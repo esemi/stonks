@@ -51,7 +51,7 @@ def _parse_xe_rate(html_source: str) -> Decimal:
     stringify = etree.XPath('string()')
     try:
         html_rate = stringify(
-            etree.HTML(html_source).xpath('//main//div/p/span[contains(@class, "faded-digits")]/parent::p')[0],
+            etree.HTML(html_source).xpath('//p/span[contains(@class, "faded-digits")]/parent::p')[0],
         )
 
     except (AttributeError, IndexError):
