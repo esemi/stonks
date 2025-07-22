@@ -13,7 +13,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: deploy
-        uses: cross-the-world/ssh-scp-ssh-pipelines@v1.1.4
+        uses: antonov1991/ssh-scp-ssh-pipelines@v1.1.4
         env:
           TARGET_DIR: /home/${{ secrets.SSH_USERNAME }}
           VENV_BIN: venv/bin

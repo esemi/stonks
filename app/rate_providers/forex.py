@@ -58,6 +58,6 @@ def _parse_xe_rate(html_source: str) -> Decimal:
         raise RuntimeError('rates not found')
 
     try:
-        return Decimal(html_rate.replace('Russian Rubles', '').strip())
+        return Decimal(html_rate.replace('Russian Ruble', '').strip())
     except ValueError:
         raise RuntimeError('rates corrupted')

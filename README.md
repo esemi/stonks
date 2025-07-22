@@ -62,4 +62,3 @@ python -m app.bot_app
 - [Forex rates](https://www.xe.com/)
 - [Cash rates](https://blagodatka.ru/)
 - [Moex rates](https://news.mail.ru/currency/src/MOEX/charcode/EUR/)
-- [production logs](http://stonks.esemi.ru/)
