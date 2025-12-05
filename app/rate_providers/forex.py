@@ -48,12 +48,8 @@ async def get_rates() -> RatesRub:
 
 
 def _parse_xe_rate(html_source: str) -> Decimal:
-    stringify = etree.XPath('string()')
     try:
-        html_rate = stringify(
-            etree.HTML(html_source).xpath('//p/span[contains(@class, "faded-digits")]/parent::p')[0],
-        )
-
+        html_rate = etree.HTML(html_source).xpath('//input[contains(@aria-label, "Receiving amount")]/@value')[1]
     except (AttributeError, IndexError):
         raise RuntimeError('rates not found')
 
