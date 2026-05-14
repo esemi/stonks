@@ -10,6 +10,7 @@ Support USD.RUB, CZK.RUB and EUR.RUB pairs.
 Used for p2p exchange chats.
 
 
+
 ### Pre-requirements
 - [redis server up and running](https://redis.io/docs/getting-started/installation/)
 - [python 3.9+](https://www.python.org/downloads/)
