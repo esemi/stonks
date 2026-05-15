@@ -3,7 +3,7 @@ import pytest
 import respx
 
 from app.rates_model import RatesRub
-from app.rate_providers.moex import get_rates
+from app.rate_providers.moex import get_rates, QUOTES_ENDPOINT
 
 
 async def test_get_moex_rates_contract():
@@ -16,7 +16,7 @@ async def test_get_moex_rates_contract():
     assert res.cny > 10
 
 
-@respx.mock(base_url="https://news.mail.ru/rate/ext/rate_initial/RUB/", assert_all_mocked=False)
+@respx.mock(base_url=QUOTES_ENDPOINT, assert_all_mocked=False)
 async def test_get_moex_rates_network_error(respx_mock):
     respx_mock.get('').mock(return_value=httpx.Response(403))
 
@@ -24,7 +24,7 @@ async def test_get_moex_rates_network_error(respx_mock):
         await get_rates()
 
 
-@respx.mock(base_url="https://news.mail.ru/rate/ext/rate_initial/RUB/", assert_all_mocked=False)
+@respx.mock(base_url=QUOTES_ENDPOINT, assert_all_mocked=False)
 async def test_get_moex_rates_invalid_content(respx_mock):
     respx_mock.get('').mock(return_value=httpx.Response(200, content='sdsd sd sd sds'))
 

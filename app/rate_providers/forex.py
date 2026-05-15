@@ -1,14 +1,13 @@
 """Forex rates scrapper."""
-import uuid
 from decimal import Decimal
+from json import JSONDecodeError
 
 import httpx
-from lxml import etree
 
 from app.rates_model import RatesRub
 from app.settings import app_settings
 
-QUOTES_ENDPOINT = 'https://www.xe.com/currencyconverter/convert/'
+QUOTES_ENDPOINT = 'https://markets.ft.com/data/currencies/ajax/conversion'
 
 
 async def get_rates() -> RatesRub:
@@ -25,10 +24,9 @@ async def get_rates() -> RatesRub:
                 response = await client.get(
                     QUOTES_ENDPOINT,
                     params={
-                        'Amount': 1,
-                        'From': currency.upper(),
-                        'To': 'RUB',
-                        'random_hash': uuid.uuid4().hex,
+                        'amount': 1,
+                        'baseCurrency': currency.upper(),
+                        'comparison': 'RUB',
                     },
                     headers={
                         b'User-Agent': app_settings.http_user_agent,
@@ -40,20 +38,20 @@ async def get_rates() -> RatesRub:
                 raise RuntimeError('network error') from fetch_exc
 
             try:
-                rates[currency] = _parse_xe_rate(response.text)
-            except RuntimeError as parsing_exc:
+                rates[currency] = _parse_rate(response.json())
+            except (RuntimeError, JSONDecodeError) as parsing_exc:
                 raise RuntimeError('parsing error') from parsing_exc
 
     return RatesRub(**rates)
 
 
-def _parse_xe_rate(html_source: str) -> Decimal:
+def _parse_rate(json_response: dict) -> Decimal:
     try:
-        html_rate = etree.HTML(html_source).xpath('//input[contains(@aria-label, "Receiving amount")]/@value')[1]
+        rate = json_response['data']['exchangeRate']
     except (AttributeError, IndexError):
         raise RuntimeError('rates not found')
 
     try:
-        return Decimal(html_rate.replace('Russian Ruble', '').strip())
+        return Decimal(rate)
     except ValueError:
         raise RuntimeError('rates corrupted')
