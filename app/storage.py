@@ -12,8 +12,6 @@ CASH_RATES_KEY = 'stonks:rates:cash'
 FOREX_RATES_KEY = 'stonks:rates:forex'
 P2P_RATES_KEY = 'stonks:rates:p2p'
 MOEX_RATES_KEY = 'stonks:rates:moex'
-BOT_STATS_COMMAND_KEY = 'stonks:stats:command:{0}'
-BOT_STATS_CHAT_KEY = 'stonks:stats:chat:{0}'
 
 db_pool: Redis = Redis.from_url(
     app_settings.redis_dsn,
@@ -24,11 +22,11 @@ db_pool: Redis = Redis.from_url(
 
 async def get_rates() -> SummaryRates:
     """Get actual rates."""
-    cash_rates = await db_pool.hgetall(CASH_RATES_KEY)
-    forex_rates = await db_pool.hgetall(FOREX_RATES_KEY)
-    p2p_rates = await db_pool.hgetall(P2P_RATES_KEY)
-    moex_rates = await db_pool.hgetall(MOEX_RATES_KEY)
-    created_at = await db_pool.get(RATES_UPDATE_DATE_KEY)
+    cash_rates: dict[str, str] = await db_pool.hgetall(CASH_RATES_KEY)  # type:ignore
+    forex_rates: dict[str, str] = await db_pool.hgetall(FOREX_RATES_KEY)  # type:ignore
+    p2p_rates: dict[str, str] = await db_pool.hgetall(P2P_RATES_KEY)  # type:ignore
+    moex_rates: dict[str, str] = await db_pool.hgetall(MOEX_RATES_KEY)  # type:ignore
+    created_at: str = await db_pool.get(RATES_UPDATE_DATE_KEY)  # type:ignore
     return SummaryRates(
         created_at=datetime.fromisoformat(created_at),
         cash=RatesRub.from_dict(cash_rates),
@@ -57,9 +55,3 @@ async def save_rates(rates: SummaryRates) -> None:
         for currency, rate in asdict(rates.moex).items()
     })
     await db_pool.set(RATES_UPDATE_DATE_KEY, str(datetime.utcnow()))
-
-
-async def inc_stats(method: str, chat_id: int) -> None:
-    """Save call counter."""
-    await db_pool.incr(BOT_STATS_COMMAND_KEY.format(method))
-    await db_pool.incr(BOT_STATS_CHAT_KEY.format(chat_id))

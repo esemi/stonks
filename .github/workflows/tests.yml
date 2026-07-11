@@ -36,7 +36,7 @@ jobs:
 
     - uses: shogo82148/actions-setup-redis@v1
       with:
-        redis-version: 'latest'
+        redis-version: '4'
     - run: redis-cli ping
 
     - name: Run tests

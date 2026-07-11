@@ -6,28 +6,30 @@ authors = ["Simon <spam@esemi.ru>"]
 package-mode = false
 
 [tool.poetry.dependencies]
-python = "^3.11"
-pydantic = {extras = ["dotenv"], version = "^1.9.0"}
-httpx = "0.23.0"
-lxml = "^4.8.0"
-cssselect = "^1.1.0"
-aiogram = "^2.20"
-ujson = "^5.3.0"
-aiohttp = {extras = ["speedups"], version = "^3.8.1"}
-prettytable = "^3.3.0"
+python = ">=3.11,<3.15"
+redis = {extras = ["hiredis"], version = "^4.6.0"}
+pydantic = {extras = ["dotenv"], version = "^2.13.4"}
+httpx = "^0.28.1"
+lxml = "^6.1.1"
+cssselect = "^1.4.0"
+aiogram = "^3.29.1"
+ujson = "^5.13.0"
+aiohttp = {extras = ["speedups"], version = "^3.14.1"}
+prettytable = "^3.18.0"
 uvloop = "^0.22.1"
-redis = {extras = ["hiredis"], version = "^8.0.1"}
+pydantic-settings = "^2.14.2"
 
 [tool.poetry.group.dev.dependencies]
-mypy = "^0.950"
-ruff = "^0.5.0"
-vulture = "^2.11"
-pytest = "^7.1.2"
-pytest-cov = "^3.0.0"
-pytest-asyncio = "^0.18.3"
-respx = "^0.19.2"
-pytest-mock = "^3.7.0"
-types-requests = "^2.28.11"
+respx = "^0.23.1"
+pytest-mock = "^3.15.1"
+types-requests = "^2.33.0.20260518"
+mypy = "^2.2.0"
+ruff = "^0.15.21"
+vulture = "^2.16"
+pytest = "^9.1.1"
+pytest-cov = "^7.1.0"
+pytest-asyncio = "^1.4.0"
+
 
 [tool.ruff]
 line-length = 125
@@ -64,6 +66,7 @@ ignore_missing_imports = true
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
+asyncio_default_test_loop_scope = "session"
 filterwarnings = [
     "ignore::DeprecationWarning",
 ]

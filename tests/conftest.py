@@ -1,20 +1,9 @@
-import asyncio
 from datetime import datetime
 from decimal import Decimal
 
 import pytest
 
-from app.rates_model import SummaryRates, RatesRub
-
-
-@pytest.fixture(scope='session')
-def event_loop():
-    try:
-        loop = asyncio.get_running_loop()
-    except RuntimeError:
-        loop = asyncio.new_event_loop()
-    yield loop
-    loop.close()
+from app.rates_model import RatesRub, SummaryRates
 
 
 @pytest.fixture

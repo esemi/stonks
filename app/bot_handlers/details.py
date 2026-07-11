@@ -20,7 +20,6 @@ async def rate_details_handler(message: types.Message) -> None:
 
     await message.answer(
         text=f'<pre>{prepared_message}</pre>\n\n<i>{actual_rates.created_at.strftime("%d.%m.%Y %H:%M UTC")}</i>',
-        parse_mode='HTML',
     )
 
 

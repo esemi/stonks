@@ -25,6 +25,5 @@ async def welcome_handler(message: types.Message) -> None:
     ))
     await message.reply(
         reply,
-        parse_mode='HTML',
-        disable_web_page_preview=True,
+        link_preview_options=types.LinkPreviewOptions(is_disabled=True),
     )

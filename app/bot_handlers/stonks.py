@@ -29,5 +29,4 @@ async def current_rates_handler(message: types.Message) -> None:
     )
     await message.answer(
         text=f'<pre>{table_content}</pre>\n\n<i>{actual_rates.created_at.strftime("%d.%m.%Y %H:%M UTC")}</i>',
-        parse_mode='HTML',
     )

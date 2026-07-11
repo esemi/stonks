@@ -2,8 +2,8 @@ import httpx
 import pytest
 import respx
 
+from app.rate_providers.moex import QUOTES_ENDPOINT, get_rates
 from app.rates_model import RatesRub
-from app.rate_providers.moex import get_rates, QUOTES_ENDPOINT
 
 
 async def test_get_moex_rates_contract():

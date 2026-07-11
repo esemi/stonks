@@ -3,35 +3,43 @@ from unittest.mock import AsyncMock, Mock
 
 import pytest
 
-from app.bot_handlers.convert import convert_currency_handler, _parse_convert_request, ConvertRequest
+from app.bot_handlers.convert import ConvertRequest, _parse_convert_request, convert_currency_handler
+
+
+def _build_message_mock(text: str) -> AsyncMock:
+    message_mock = AsyncMock()
+    message_mock.text = text
+    message_mock.chat.username = None
+    message_mock.chat.title = None
+    return message_mock
 
 
 async def test_convert_currency_handler_invalid_request():
-    message_mock = AsyncMock()
-    message_mock.get_args = Mock(return_value='invalid convert request')
+    message_mock = _build_message_mock('/convert invalid convert request')
+    command_mock = Mock(args='invalid convert request')
     expected_message = 'I dont understand'
 
-    await convert_currency_handler(message=message_mock)
+    await convert_currency_handler(message=message_mock, command=command_mock)
 
     assert message_mock.reply.call_count == 1
     assert expected_message in message_mock.reply.call_args.kwargs['text']
 
 
 async def test_convert_currency_handler_to_rub(fixture_filled_rates):
-    message_mock = AsyncMock()
-    message_mock.get_args = Mock(return_value='15000 czk')
+    message_mock = _build_message_mock('/convert 15000 czk')
+    command_mock = Mock(args='15000 czk')
 
-    await convert_currency_handler(message=message_mock)
+    await convert_currency_handler(message=message_mock, command=command_mock)
 
     assert message_mock.reply.call_count == 1
     assert 'RUB' in message_mock.reply.call_args.kwargs['text']
 
 
 async def test_convert_currency_handler_from_rub(fixture_filled_rates):
-    message_mock = AsyncMock()
-    message_mock.get_args = Mock(return_value='15000 руб')
+    message_mock = _build_message_mock('/convert 15000 руб')
+    command_mock = Mock(args='15000 руб')
 
-    await convert_currency_handler(message=message_mock)
+    await convert_currency_handler(message=message_mock, command=command_mock)
 
     assert message_mock.reply.call_count == 1
     assert 'CZK' in message_mock.reply.call_args.kwargs['text']

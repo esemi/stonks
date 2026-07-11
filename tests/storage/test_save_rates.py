@@ -1,8 +1,8 @@
 from datetime import datetime
 from decimal import Decimal
 
-from app.rates_model import SummaryRates, RatesRub
-from app.storage import save_rates, get_rates
+from app.rates_model import RatesRub, SummaryRates
+from app.storage import get_rates, save_rates
 
 
 async def test_save_rates_happy_path():

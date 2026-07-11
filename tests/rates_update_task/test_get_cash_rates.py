@@ -2,8 +2,8 @@ import httpx
 import pytest
 import respx
 
-from app.rates_model import RatesRub
 from app.rate_providers.cash import get_rates
+from app.rates_model import RatesRub
 
 
 async def test_get_cash_rates_contract():

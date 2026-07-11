@@ -2,7 +2,8 @@
 import os
 from decimal import Decimal
 
-from pydantic import BaseSettings, Field, RedisDsn
+from pydantic import Field
+from pydantic_settings import BaseSettings
 
 from app import currency
 
@@ -10,7 +11,7 @@ from app import currency
 class AppSettings(BaseSettings):
     """Application settings class."""
 
-    redis_dsn: RedisDsn = Field('redis://localhost:6379/3')
+    redis_dsn: str = Field('redis://localhost:6379/3')
     http_timeout: int = Field(45, description='rates-API request timeout')
     http_user_agent: bytes = Field(
         default=b'Mozilla/5.0 (X11; x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.75 Safari/536.36"',
@@ -53,5 +54,5 @@ class AppSettings(BaseSettings):
 
 
 app_settings = AppSettings(
-    _env_file=os.path.join(os.path.dirname(__file__), '..', '.env'),
+    _env_file=os.path.join(os.path.dirname(__file__), '..', '.env'),  # type:ignore
 )

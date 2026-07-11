@@ -6,6 +6,7 @@ from decimal import Decimal
 from typing import Optional
 
 from aiogram import types
+from aiogram.filters import CommandObject
 from prettytable import PrettyTable
 
 from app import currency, storage
@@ -14,13 +15,13 @@ from app.rates_model import CurrencyRates, SummaryRates
 from app.settings import app_settings
 
 
-async def convert_currency_handler(message: types.Message) -> None:
+async def convert_currency_handler(message: types.Message, command: CommandObject) -> None:
     """Convert currency."""
     await log_request(message)
 
-    convert_request = _parse_convert_request(message.get_args())
+    convert_request = _parse_convert_request(command.args)
     if not convert_request:
-        logging.warning(f'invalid convert call: "{message.text}" from chat={message.from_user.username}')
+        logging.warning(f'invalid convert call: "{message.text}" from chat={message.from_user.username}')  # type:ignore
         reply = '\n'.join((
             'I dont understand =(',
             '<b>Usage</b>:',
@@ -29,20 +30,13 @@ async def convert_currency_handler(message: types.Message) -> None:
             '<pre>/convert 1500р</pre>',
             '<pre>/convert 3000 eur</pre>',
         ))
-        await message.reply(
-            text=reply,
-            parse_mode='HTML',
-            disable_web_page_preview=True,
-        )
+        await message.reply(text=reply)
         return
 
     actual_rates = await storage.get_rates()
     prepared_message = _prepare_conversion_table(actual_rates, convert_request)
 
-    await message.reply(
-        text=f'<pre>{prepared_message}</pre>',
-        parse_mode='HTML',
-    )
+    await message.reply(text=f'<pre>{prepared_message}</pre>')
 
 
 @dataclasses.dataclass

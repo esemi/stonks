@@ -4,20 +4,18 @@ import logging
 
 from aiogram import types
 
-from app import storage
+
+def _get_command(message: types.Message) -> str:
+    return (message.text or '').split(maxsplit=1)[0]
 
 
 async def log_request(message: types.Message) -> None:
     """Log bot request for stats."""
-    chat_name = message.chat.id
-    if 'username' in message.chat:
+    chat_name = str(message.chat.id)
+    if message.chat.username:
         chat_name = f'private-{message.chat.username}'
-    if 'title' in message.chat:
+    if message.chat.title:
         chat_name = f'channel-{message.chat.title}'
 
-    await storage.inc_stats(
-        message.get_command(),
-        chat_name,
-    )
-
-    logging.info(f'{message.get_command()} call: username={message.from_user.username} from chat={chat_name}')
+    command = _get_command(message)
+    logging.info(f'{command} call: username={message.from_user.username} from chat={chat_name}')  # type:ignore
