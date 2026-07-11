@@ -20,8 +20,8 @@ async def current_rates_handler(message: types.Message) -> None:
     for code in app_settings.supported_foreign_currencies:
         table.add_row([
             code.upper(),
-            '{0:.2f}'.format(getattr(actual_rates.forex, code)),
-            '{0:.2f}'.format(getattr(actual_rates.cash, code)),
+            f'{getattr(actual_rates.forex, code):.2f}',
+            f'{getattr(actual_rates.cash, code):.2f}',
         ])
 
     table_content = table.get_string(

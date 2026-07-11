@@ -20,8 +20,4 @@ async def log_request(message: types.Message) -> None:
         chat_name,
     )
 
-    logging.info('{0} call: username={1} from chat={2}'.format(
-        message.get_command(),
-        message.from_user.username,
-        chat_name,
-    ))
+    logging.info(f'{message.get_command()} call: username={message.from_user.username} from chat={chat_name}')

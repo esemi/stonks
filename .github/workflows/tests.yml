@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ['3.9', '3.10']
+        python-version: ['3.11']
     steps:
     - uses: actions/checkout@v2
 
@@ -26,9 +26,13 @@ jobs:
       run: |
         poetry run mypy app/
 
-    - name: Run flake8
+    - name: Run ruff
       run: |
-        poetry run flake8 app/
+        poetry run ruff check app/
+
+    - name: Run vulture
+      run: |
+        poetry run vulture app/
 
     - uses: shogo82148/actions-setup-redis@v1
       with:

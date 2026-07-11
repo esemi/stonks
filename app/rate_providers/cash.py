@@ -51,12 +51,12 @@ async def get_rates() -> RatesRub:
 def _parse_ligovka_rate(html_source: str) -> Decimal:
     try:
         html_rate = etree.HTML(html_source).cssselect('.table_course tr')[1]
-    except (AttributeError, IndexError):
-        raise RuntimeError('rates not found')
+    except (AttributeError, IndexError) as err:
+        raise RuntimeError('rates not found') from err
 
     try:
         buy_rate, sell_rate = html_rate.cssselect('.money_price')
-    except ValueError:
-        raise RuntimeError('rates corrupted')
+    except ValueError as err:
+        raise RuntimeError('rates corrupted') from err
 
     return (Decimal(sell_rate.text) + Decimal(buy_rate.text)) / Decimal(2)

@@ -47,13 +47,11 @@ def _parse_news_mail_rate(html_source: str) -> RatesRub:
     for currency_code in app_settings.supported_foreign_currencies:
         try:  # noqa: WPS229
             currency_rate = html_rates.xpath(
-                '//div/span[text()="{0}/RUB"]//ancestor::div[@class="swiper-slide"]//span[@data-qa="Title"]/text()'.format(
-                    currency_code.upper(),
-                ),
+                f'//div/span[text()="{currency_code.upper()}/RUB"]//ancestor::div[@class="swiper-slide"]//span[@data-qa="Title"]/text()',
             )[0]
             rates[currency_code] = Decimal(currency_rate)
-        except (AttributeError, IndexError, JSONDecodeError):
-            raise RuntimeError('rates not found')
+        except (AttributeError, IndexError, JSONDecodeError) as err:
+            raise RuntimeError('rates not found') from err
 
     rates[currency.CZK] = rates[currency.CZK] / Decimal(10)
 

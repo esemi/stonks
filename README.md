@@ -13,7 +13,7 @@ Used for p2p exchange chats.
 
 ### Pre-requirements
 - [redis server up and running](https://redis.io/docs/getting-started/installation/)
-- [python 3.9+](https://www.python.org/downloads/)
+- [python 3.11+](https://www.python.org/downloads/)
 - [telegram bot token](https://t.me/botfather)
 - [unofficial yahoo finance token](https://www.yahoofinanceapi.com/dashboard)
 
@@ -21,7 +21,7 @@ Used for p2p exchange chats.
 ```shell
 $ git clone git@github.com:esemi/stonks.git
 $ cd stonks
-$ python3.9 -m venv venv
+$ python3 -m venv venv
 $ source venv/bin/activate
 $ pip install -U poetry pip setuptools
 $ poetry config virtualenvs.create false --local
@@ -45,7 +45,8 @@ $ pytest --cov=app
 ### Run linters
 ```
 $ poetry run mypy app/
-$ poetry run flake8 app/
+$ poetry run ruff check app/
+$ poetry run vulture app/
 ```
 
 ### Run background task

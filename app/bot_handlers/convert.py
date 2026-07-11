@@ -20,10 +20,7 @@ async def convert_currency_handler(message: types.Message) -> None:
 
     convert_request = _parse_convert_request(message.get_args())
     if not convert_request:
-        logging.warning('invalid convert call: "{0}" from chat={1}'.format(
-            message.text,
-            message.from_user.username,
-        ))
+        logging.warning(f'invalid convert call: "{message.text}" from chat={message.from_user.username}')
         reply = '\n'.join((
             'I dont understand =(',
             '<b>Usage</b>:',
@@ -157,4 +154,4 @@ def _get_conversion_table_from_rub(convert_request: ConvertRequest, currency_rat
 
 def format_amount(amount: int) -> str:
     """Format amounts for humans."""
-    return '{0:,}'.format(amount).replace(',', ' ')
+    return f'{amount:,}'.replace(',', ' ')

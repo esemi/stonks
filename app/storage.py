@@ -2,7 +2,7 @@
 from dataclasses import asdict
 from datetime import datetime
 
-import aioredis
+from redis.asyncio import Redis
 
 from app.rates_model import RatesRub, SummaryRates
 from app.settings import app_settings
@@ -15,7 +15,7 @@ MOEX_RATES_KEY = 'stonks:rates:moex'
 BOT_STATS_COMMAND_KEY = 'stonks:stats:command:{0}'
 BOT_STATS_CHAT_KEY = 'stonks:stats:chat:{0}'
 
-db_pool: aioredis.Redis = aioredis.from_url(
+db_pool: Redis = Redis.from_url(
     app_settings.redis_dsn,
     encoding='utf-8',
     decode_responses=True,

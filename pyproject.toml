@@ -6,21 +6,22 @@ authors = ["Simon <spam@esemi.ru>"]
 package-mode = false
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = "^3.11"
 pydantic = {extras = ["dotenv"], version = "^1.9.0"}
-httpx = "^0.22.0"
+httpx = "0.23.0"
 lxml = "^4.8.0"
 cssselect = "^1.1.0"
-aioredis = {extras = ["hiredis"], version = "^2.0.1"}
 aiogram = "^2.20"
-uvloop = "^0.16.0"
 ujson = "^5.3.0"
 aiohttp = {extras = ["speedups"], version = "^3.8.1"}
 prettytable = "^3.3.0"
+uvloop = "^0.22.1"
+redis = {extras = ["hiredis"], version = "^8.0.1"}
 
-[tool.poetry.dev-dependencies]
+[tool.poetry.group.dev.dependencies]
 mypy = "^0.950"
-wemake-python-styleguide = "^0.16.1"
+ruff = "^0.5.0"
+vulture = "^2.11"
 pytest = "^7.1.2"
 pytest-cov = "^3.0.0"
 pytest-asyncio = "^0.18.3"
@@ -28,8 +29,36 @@ respx = "^0.19.2"
 pytest-mock = "^3.7.0"
 types-requests = "^2.28.11"
 
+[tool.ruff]
+line-length = 125
+target-version = "py39"
+
+[tool.ruff.lint]
+select = [
+    "E", "W",    # pycodestyle
+    "F",         # pyflakes
+    "I",         # isort
+    "B",         # flake8-bugbear
+    "C4",        # flake8-comprehensions
+    "UP",        # pyupgrade
+    "S",         # flake8-bandit
+    "N",         # pep8-naming
+]
+
+[tool.ruff.lint.per-file-ignores]
+"app/settings.py" = ["E501"]   # длинные строки в конфиге
+"tests/*" = ["S101"]           # assert в тестах — норма
+
+[tool.vulture]
+paths = ["app"]
+ignore_names = [
+    "current_signal", "frame",
+    "field_names", "align",
+    "czk", "eur", "rub", "usd", "cny",
+]
+
 [tool.mypy]
-python_version = 3.9
+python_version = 3.11
 disallow_untyped_defs = true
 ignore_missing_imports = true
 

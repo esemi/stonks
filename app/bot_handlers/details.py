@@ -44,7 +44,7 @@ def _prepare_details_table(actual_rates: SummaryRates) -> str:
 def _fill_currency_table(table: PrettyTable, actual_rates: SummaryRates, currency_code: str) -> None:
     currency_rates = actual_rates.get_rates(currency_code)
 
-    table.add_row(['Forex', '{0:.4f}'.format(currency_rates.forex)])
+    table.add_row(['Forex', f'{currency_rates.forex:.4f}'])
     if currency_code != currency.CZK:
         table.add_row(['Moex', _format_rate_with_diff(currency_rates.moex, currency_rates.forex)])
 
@@ -58,11 +58,7 @@ def _format_rate_with_diff(rate: Decimal, base_rate: Decimal) -> str:
     diff = (rate - base_rate) / base_rate * Decimal(100)
     if abs(diff) < Decimal('0.1'):
         diff = Decimal(0)
-    return '{0:.4f} {1}{2:.1f}%'.format(
-        rate,
-        _return_number_sign(diff),
-        abs(diff),
-    )
+    return f'{rate:.4f} {_return_number_sign(diff)}{abs(diff):.1f}%'
 
 
 def _return_number_sign(amount: Decimal) -> str:

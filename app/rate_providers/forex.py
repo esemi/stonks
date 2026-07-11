@@ -48,10 +48,10 @@ async def get_rates() -> RatesRub:
 def _parse_rate(json_response: dict) -> Decimal:
     try:
         rate = json_response['data']['exchangeRate']
-    except (AttributeError, IndexError):
-        raise RuntimeError('rates not found')
+    except (AttributeError, IndexError) as err:
+        raise RuntimeError('rates not found') from err
 
     try:
         return Decimal(rate)
-    except ValueError:
-        raise RuntimeError('rates corrupted')
+    except ValueError as err:
+        raise RuntimeError('rates corrupted') from err

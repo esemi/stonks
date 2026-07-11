@@ -26,7 +26,7 @@ jobs:
           first_ssh: |-
             mkdir -p app
             mkdir -p logs
-            test -d venv || python3.9 -m venv venv
+            test -d venv || python3.11 -m venv venv
             touch .env
 
           scp: |-
@@ -36,7 +36,7 @@ jobs:
 
           last_ssh: |-
             source $VENV_BIN/activate 
-            pip install --no-cache-dir poetry pip setuptools
+            pip install -U --no-cache-dir poetry pip setuptools
             poetry install --only main
             pip cache purge
             echo 'telegram_token=${{ secrets.TELEGRAM_PROD_TOKEN }}' > .env
